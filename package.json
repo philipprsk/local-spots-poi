@@ -1,0 +1,36 @@
+{
+  "name": "local-spots-poi",
+  "version": "1.0.0",
+  "description": "Level 1 – Core API   Node.js + Express backend for managing local cafés and local spots.",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+
+   "scripts": {
+    "start": "node src/server.js",
+    "lint": "./node_modules/.bin/eslint . --ext .js",
+    "test": "./node_modules/mocha/bin/_mocha --ui tdd test/**.js -exit"
+  },
+
+  "devDependencies": {
+    "chai": "^6.2.2",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "mocha": "^11.7.5",
+    "prettier": "^3.7.4"
+  },
+
+  "dependencies": {
+    "@hapi/cookie": "^12.0.1",
+    "@hapi/hapi": "^21.4.4",
+    "@hapi/vision": "^7.0.3",
+    "dotenv": "^17.2.3",
+    "handlebars": "^4.7.8",
+    "joi": "^18.0.2",
+    "lowdb": "^7.0.1",
+    "uuid": "^13.0.0"
+  }
+}
