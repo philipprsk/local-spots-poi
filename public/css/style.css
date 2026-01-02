@@ -1,0 +1,21 @@
+/* Warm background and accent colors for a cozy, earthy theme */
+
+body {
+  background-color: #fdf5e6; 
+  min-height: 100vh;
+}
+
+
+.hero {
+  background-color: #efebe9; 
+}
+
+
+.box {
+  border-top: 4px solid #8B4513; 
+}
+
+
+.title {
+  color: #4e342e !important; 
+}

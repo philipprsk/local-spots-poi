@@ -1,5 +1,6 @@
 import Hapi from "@hapi/hapi";
 import Vision from "@hapi/vision";
+import Inert from "@hapi/inert";
 import Cookie from "@hapi/cookie";
 import Handlebars from "handlebars";
 import path from "path";
@@ -26,6 +27,9 @@ async function init() {
     host: "localhost",
   });
   await server.register(Vision);
+  await server.register(Inert);
+  await server.register(Cookie);
+
   server.views({
     engines: {
       hbs: Handlebars,
@@ -37,8 +41,6 @@ async function init() {
     layout: true,
     isCached: false,
   });
-
-  await server.register(Cookie);
 
   server.auth.strategy("session", "cookie", {
     cookie: {
@@ -54,6 +56,21 @@ async function init() {
   server.validator(Joi);
 
   db.init("json");
+
+  server.route({
+      method: "GET",
+      path: "/public/{param*}", // Serve static files from /public
+      handler: {
+        directory: {
+          path: path.join(__dirname, "../public"), // Adjusted to point to the public directory
+          redirectToSlash: true,
+          index: true,
+        },
+      },
+      config: { auth: false } 
+    });
+
+
   server.route(webRoutes);
   await server.start();
   console.log("Server running on %s", server.info.uri);
