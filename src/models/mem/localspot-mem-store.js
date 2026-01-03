@@ -13,11 +13,11 @@ export const localspotMemStore = {
     return localspot;
   },
 
-  async getLocalSpotById(id) {
+  async getLocalSpot(id) {
     return localspots.find((localspot) => localspot._id === id);
   },
 
-  async deleteLocalSpotById(id) {
+  async deleteLocalSpot(id) {
     const index = localspots.findIndex((localspot) => localspot._id === id);
     localspots.splice(index, 1);
   },

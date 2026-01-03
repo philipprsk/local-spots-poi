@@ -30,7 +30,7 @@ suite("User API tests", () => {
   });
 
   test("delete all users", async () => {
-    let returnedUsers= await localspotService.getAllUsers();
+    let returnedUsers = await localspotService.getAllUsers();
     assert.equal(returnedUsers.length, 3);
     await localspotService.deleteAllUsers();
     returnedUsers = await localspotService.getAllUsers();
@@ -40,5 +40,26 @@ suite("User API tests", () => {
   test("get a user - success", async () => {
     const returnedUser = await localspotService.getUser(testUsers[0]._id);
     assert.deepEqual(testUsers[0], returnedUser);
+  });
+
+     test("get a user - bad id", async () => {
+    try {
+      const returnedUser = await localspotService.getUser("1234");
+      assert.fail("Should not return a response");
+    } catch (error) {
+      assert(error.response.data.message === "No User with this id");
+      assert.equal(error.response.data.statusCode, 404);
+    }
+  });
+
+  test("get a user - deleted user", async () => {
+    await localspotService.deleteAllUsers();
+    try {
+      const returnedUser = await localspotService.getUser(testUsers[0]._id);
+      assert.fail("Should not return a response");
+    } catch (error) {
+      assert(error.response.data.message === "No User with this id");
+      assert.equal(error.response.data.statusCode, 404);
+    }
   });
 });

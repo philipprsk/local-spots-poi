@@ -2,6 +2,7 @@ import Hapi from "@hapi/hapi";
 import Vision from "@hapi/vision";
 import Inert from "@hapi/inert";
 import Cookie from "@hapi/cookie";
+import HapiSwagger from "hapi-swagger";
 import Handlebars from "handlebars";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -12,6 +13,12 @@ import { webRoutes } from "./web-routes.js";
 import { db } from "./models/db.js"; 
 import { accountsController } from "./controllers/accounts-controller.js";
 
+const swaggerOptions = {
+  info: {
+    title: "Localspot API",
+    version: "0.1",
+  },
+};
 
 const result = dotenv.config();
 if (result.error) {
@@ -27,9 +34,17 @@ async function init() {
     port: 3000,
     host: "localhost",
   });
-  await server.register(Vision);
-  await server.register(Inert);
+  
   await server.register(Cookie);
+  await server.register([
+    Inert,
+    Vision,
+    {
+      plugin: HapiSwagger,
+      options: swaggerOptions,
+    },
+]);
+
 
   server.views({
     engines: {
@@ -56,7 +71,7 @@ async function init() {
 
   server.validator(Joi);
 
-  db.init("json");
+  db.init("mongo");
 
   server.route({
       method: "GET",

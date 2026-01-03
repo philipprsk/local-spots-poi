@@ -15,7 +15,7 @@ export const localspotJsonStore = {
     return localspot;
   },
 
-  async getLocalSpotById(id) {
+  async getLocalSpot(id) {
     await db.read();
     let u = db.data.localspots.find((localspot) => localspot._id === id);
     if (u === undefined) u = null;
@@ -29,7 +29,7 @@ export const localspotJsonStore = {
     return u;
   },
 
-  async deleteLocalSpotById(id) {
+  async deleteLocalSpot(id) {
     await db.read();
     const index = db.data.localspots.findIndex((localspot) => localspot._id === id);
     if (index !== -1) {
