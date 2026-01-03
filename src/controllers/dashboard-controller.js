@@ -38,10 +38,8 @@ export const dashboardController = {
     },
   },
 
-  deleteLocalSpot: { // Name konsistent halten
+  deleteLocalSpot: { 
     handler: async function (request, h) {
-      // Hier fehlte die Validierung, ob der Spot auch dem User gehört (Sicherheitslücke), 
-      // aber für Level 1 reicht oft das reine Löschen per ID.
       const localspot = await db.localspotStore.getLocalSpotById(request.params.id);
       await db.localspotStore.deleteLocalSpotById(localspot._id);
       return h.redirect("/dashboard");

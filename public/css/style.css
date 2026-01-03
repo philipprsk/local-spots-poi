@@ -1,21 +1,42 @@
-/* Warm background and accent colors for a cozy, earthy theme */
-
-body {
-  background-color: #fdf5e6; 
-  min-height: 100vh;
+/* 1. Navigation Bar - Beige background to match the page */
+.navbar {
+  background-color: #efebe9 !important; /* A slightly darker beige/grey for contrast */
+  border-bottom: 2px solid #d7ccc8;
+  padding: 0.5rem 0;
 }
 
-
-.hero {
-  background-color: #efebe9; 
+/* 2. Navbar Links - Dark brown text */
+.navbar-item, .navbar-link {
+  color: #5d4037 !important;
+  font-weight: 600;
 }
 
-
-.box {
-  border-top: 4px solid #8B4513; 
+/* 3. Navbar Hover State */
+.navbar-item:hover, .navbar-link:hover {
+  background-color: #d7ccc8 !important; /* Slightly darker on hover */
+  color: #4e342e !important;
 }
 
+/* 4. Login and Action Buttons - Signature Brown */
+.button.is-link, 
+.button.is-primary, 
+.button.is-info,
+input[type="submit"] {
+  background-color: #8B4513 !important; /* Saddle Brown */
+  border-color: transparent !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
 
-.title {
-  color: #4e342e !important; 
+.button.is-link:hover {
+  background-color: #5D4037 !important; /* Darker coffee brown on hover */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
+}
+
+/* 5. Special fix for the Login button if it uses 'is-success' or other classes */
+.button.is-success, .button.is-light {
+    background-color: #A0522D !important; /* Sienna brown */
+    color: white !important;
 }

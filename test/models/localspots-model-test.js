@@ -1,8 +1,8 @@
 import { assert } from "chai";
-import { db } from "../src/models/db.js";
-import { harbourCafe, testLocalSpots } from "./fixtures.js";
+import { db } from "../../src/models/db.js";
+import { harbourCafe, testLocalSpots } from "../fixtures.js";
 
-suite("LocalSpots API tests", () => {
+suite("LocalSpots Model tests", () => {
 
   setup(async () => {
     db.init("json");
@@ -64,7 +64,7 @@ suite("LocalSpots API tests", () => {
     for (let i = 0; i < testLocalSpots.length; i += 1) {
       await db.localspotStore.addLocalSpot(testLocalSpots[i]);
     }
-    // 2. Versuchen eine ID zu löschen, die es nicht gibt
+    // 2. Versuch einen Eintrag zu löschen, der nicht existiert
     await db.localspotStore.deleteLocalSpotById("bad-id");
     
     // 3. Prüfen, ob noch alle da sind

@@ -14,7 +14,10 @@ export const UserCredentialsSpec = {
 
 export const LocalSpotSpec = {
   title: Joi.string().required(),
-  description: Joi.string().required(),
+  description: Joi.string().required().allow("").optional(),
   latitude: Joi.number().required(),
   longitude: Joi.number().required(),
 };
+
+
+

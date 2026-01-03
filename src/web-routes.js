@@ -11,7 +11,7 @@ export const webRoutes = [
   { method: "POST", path: "/authenticate", config: accountsController.login },
 
   { method: "GET", path: "/dashboard", config: dashboardController.index },
-  { method: "POST", path: "/dashboard/addlocalSpot", config: dashboardController.addLocalSpot },
+  { method: "POST", path: "/dashboard/addlocalspot", config: dashboardController.addLocalSpot },
   { method: "GET", path: "/about", config: aboutController.index },
-  { method: "GET", path: "/dashboard/deletelocalSpot/{id}", config: dashboardController.deleteLocalSpot }
+  { method: "GET", path: "/dashboard/deletelocalspot/{id}", config: dashboardController.deleteLocalSpot }
 ];
