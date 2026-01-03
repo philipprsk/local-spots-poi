@@ -20,12 +20,12 @@ suite("User API tests", () => {
   test("create a user", async () => {
   const newUser = await localspotService.createUser(maggie);
   
-  // Vergleiche nur die relevanten Datenfelder
+  // Comparing field by field to avoid issues with additional fields like _id
   assert.equal(newUser.firstName, maggie.firstName);
   assert.equal(newUser.lastName, maggie.lastName);
   assert.equal(newUser.email, maggie.email);
   
-  // Prüfe separat, ob der Server eine ID vergeben hat
+ 
   assert.isDefined(newUser._id);
   });
 

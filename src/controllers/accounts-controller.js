@@ -26,6 +26,13 @@ export const accountsController = {
     },
     handler: async function (request, h) {
       const user = request.payload;
+
+      // NEU: Check ob User bereits existiert
+    const existingUser = await db.userStore.getUserByEmail(user.email);
+    if (existingUser) {
+      const errors = [{ message: "Email already registered. Please login or use a different email." }];
+      return h.view("signup-view", { title: "Sign up error", errors: errors }).takeover().code(400);
+    }
       await db.userStore.addUser(user);
       return h.redirect("/");
     },
