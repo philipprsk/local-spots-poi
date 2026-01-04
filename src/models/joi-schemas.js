@@ -1,27 +1,28 @@
 import Joi from "joi";
 
+
 export const IdSpec = Joi.alternatives().try(Joi.string(), Joi.object()).description("a valid ID");
 
-/**
- * User Schemas
- */
-export const UserSpec = Joi.object()
+export const UserCredentialsSpec = Joi.object()
   .keys({
-    firstName: Joi.string().example("Homer").required(),
-    lastName: Joi.string().example("Simpson").required(),
     email: Joi.string().email().example("homer@simpson.com").required(),
     password: Joi.string().example("secret").required(),
-    _id: IdSpec,
-    __v: Joi.any().optional(),
   })
-  .label("UserDetails");
+  .label("UserCredentials");
 
-export const UserArray = Joi.array().items(UserSpec).label("UserArray");
+export const UserSpec = UserCredentialsSpec.keys({
+  firstName: Joi.string().example("Homer").required(),
+  lastName: Joi.string().example("Simpson").required(),
+  _id: IdSpec.optional(), 
+  __v: Joi.any().optional(),
+}).label("UserDetails");
 
-export const UserCredentialsSpec = Joi.object().keys({
-  email: Joi.string().email().example("homer@simpson.com").required(),
-  password: Joi.string().example("secret").required(),
-}).label("UserCredentials");
+export const UserSpecPlus = UserSpec.keys({
+  _id: IdSpec,
+  __v: Joi.number(),
+}).label("UserDetailsPlus");
+
+export const UserArray = Joi.array().items(UserSpecPlus).label("UserArray");
 
 /**
  * LocalSpot Schemas
@@ -47,3 +48,10 @@ export const LocalSpotSpecPlus = LocalSpotSpec.keys({
 }).label("LocalSpotDetails");
 
 export const LocalSpotArray = Joi.array().items(LocalSpotSpecPlus).label("LocalSpotArray");
+
+export const JwtAuthSpec = Joi.object()
+  .keys({
+    success: Joi.boolean().example(true).required(),
+    token: Joi.string().example("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...").required(),
+  })
+  .label("JwtAuth");

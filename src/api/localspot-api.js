@@ -5,7 +5,9 @@ import { validationError } from "./logger.js";
 
 export const localspotApi = {
   find: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request, h) {
       try {
         const localspots = await db.localspotStore.getAllLocalSpots();
@@ -21,7 +23,9 @@ export const localspotApi = {
   },
 
   findOne: {
-    auth: false,
+    auth: { 
+      strategy: "jwt",
+    },
     handler: async function (request, h) {
       try {
         const localspot = await db.localspotStore.getLocalSpot(request.params.id);
@@ -41,7 +45,9 @@ export const localspotApi = {
   },
 
   create: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request, h) {
       try {
         const localspot = await db.localspotStore.addLocalSpot(request.payload);
@@ -61,7 +67,9 @@ export const localspotApi = {
   },
 
   deleteOne: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request, h) {
       try {
         const localspot = await db.localspotStore.getLocalSpot(request.params.id);
@@ -81,7 +89,9 @@ export const localspotApi = {
   },
 
   deleteAll: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request, h) {
       try {
         await db.localspotStore.deleteAllLocalSpots();

@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { assert } from "chai";
 import { localspotService } from "./localspot-service.js";
 import { assertSubset } from "../test-utils.js";
-import { maggie, harbourCafe, testLocalSpots } from "../fixtures.js";
+import { maggie, harbourCafe, testLocalSpots, maggieCredentials } from "../fixtures.js";
 
 EventEmitter.setMaxListeners(25);
 
@@ -11,9 +11,13 @@ suite("Localspot API tests", () => {
     let user = null;
 
   setup(async () => {
+    localspotService.clearAuth();
+    user = await localspotService.createUser(maggie);
+    await localspotService.authenticate(maggieCredentials);
     await localspotService.deleteAllLocalSpots();
     await localspotService.deleteAllUsers();
     user = await localspotService.createUser(maggie);
+    await localspotService.authenticate(maggieCredentials);
     harbourCafe.userid = user._id;
   });
 

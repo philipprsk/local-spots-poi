@@ -3,6 +3,7 @@ import Vision from "@hapi/vision";
 import Inert from "@hapi/inert";
 import Cookie from "@hapi/cookie";
 import HapiSwagger from "hapi-swagger";
+import jwt from "hapi-auth-jwt2";
 import Handlebars from "handlebars";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -10,21 +11,32 @@ import dotenv from "dotenv";
 import Joi from "joi";
 import { apiRoutes } from "./api-routes.js";
 import { webRoutes } from "./web-routes.js";
+import { validate } from "./api/jwt-utils.js";
 import { db } from "./models/db.js"; 
 import { accountsController } from "./controllers/accounts-controller.js";
 
-const swaggerOptions = {
-  info: {
-    title: "Localspot API",
-    version: "0.1",
-  },
-};
 
 const result = dotenv.config();
 if (result.error) {
   console.log(result.error.message);
   process.exit(1);
 }
+
+const swaggerOptions = {
+  info: {
+    title: "Localspot API",
+    version: "0.1"
+  },
+  securityDefinitions: {
+    jwt: {
+      type: "apiKey",
+      name: "Authorization",
+      in: "header"
+    }
+  },
+  security: [{ jwt: [] }]
+};
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,6 +56,7 @@ async function init() {
       options: swaggerOptions,
     },
 ]);
+  await server.register(jwt);
 
 
   server.views({
@@ -70,6 +83,13 @@ async function init() {
   server.auth.default("session");
 
   server.validator(Joi);
+
+  server.auth.strategy("jwt", "jwt", {
+    key: process.env.COOKIE_PASSWORD,
+    validate: validate,
+    verifyOptions: { algorithms: ["HS256"] }
+  });
+
 
   db.init("mongo");
 

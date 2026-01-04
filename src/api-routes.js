@@ -12,4 +12,5 @@ export const apiRoutes = [
   { method: "GET", path: "/api/localspots", config: localspotApi.find },
   { method: "GET", path: "/api/localspots/{id}", config: localspotApi.findOne },
   { method: "DELETE", path: "/api/localspots/{id}", config: localspotApi.deleteOne },
+  { method: "POST", path: "/api/users/authenticate", config: userApi.authenticate },
 ];
