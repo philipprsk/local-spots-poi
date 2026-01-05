@@ -1,60 +1,110 @@
 import { assert } from "chai";
 import { EventEmitter } from "events";
 import { db } from "../../src/models/db.js";
-import { harbourCafe, testLocalSpots } from "../fixtures.js";
+import { harbourCafe, testLocalSpots, maggie } from "../fixtures.js";
 import { assertSubset } from "../test-utils.js";
 
-
-
 suite("LocalSpots Model tests", () => {
-
   EventEmitter.setMaxListeners(25);
 
+  let user;
+  let category;
+
   setup(async () => {
-    db.init("mongo");
-    await db.localspotStore.deleteAllLocalSpots();
+  await db.init("mongo");
+  await db.userStore.deleteAll();
+  await db.localspotStore.deleteAllLocalSpots();
+  await db.categoryStore.deleteAll();
+  user = await db.userStore.addUser(maggie);
+  category = await db.categoryStore.addCategory({
+    name: "Restaurant",
+    slug: "restaurant",
+    icon: "🍽️",
+    color: "#FF5733",
   });
+});
 
   test("create a localspot", async () => {
-    const newLocalspot = await db.localspotStore.addLocalSpot(harbourCafe);
-    assertSubset(harbourCafe, newLocalspot)
+    const spotWithUser = { ...harbourCafe, userid: user._id };
+    const newLocalspot = await db.localspotStore.addLocalSpot(spotWithUser);
+    assert.equal(newLocalspot.title, harbourCafe.title);
+    assert.equal(newLocalspot.description, harbourCafe.description);
+    assert.equal(newLocalspot.latitude, harbourCafe.latitude);
+    assert.equal(newLocalspot.longitude, harbourCafe.longitude);
+    assert.equal(newLocalspot.userid.toString(), user._id.toString());
   });
 
+  test("add localspot with category", async () => {
+    const spot = await db.localspotStore.addLocalSpot({
+      userid: user._id,
+      title: "Test Restaurant",
+      description: "Great food",
+      latitude: 52.52,
+      longitude: 13.405,
+      category: category._id,
+    });
+    const catId = spot.category._id ? spot.category._id : spot.category;
+    assert.equal(catId.toString(), category._id.toString());
+  });
+
+  test("get localspot with populated category", async () => {
+    const spot = await db.localspotStore.addLocalSpot({
+      userid: user._id,
+      title: "Test Cafe",
+      latitude: 52.52,
+      longitude: 13.405,
+      category: category._id,
+    });
+    const retrieved = await db.localspotStore.getLocalSpot(spot._id);
+    assert.equal(retrieved.category.name, "Restaurant");
+    assert.equal(retrieved.category.icon, "🍽️");
+  });
+
+  test("get user localspots with category", async () => {
+    await db.localspotStore.addLocalSpot({
+      userid: user._id,
+      title: "Spot 1",
+      latitude: 52.52,
+      longitude: 13.405,
+      category: category._id,
+    });
+    const spots = await db.localspotStore.getUserLocalSpots(user._id);
+    assert.equal(spots.length, 1);
+    assert.equal(spots[0].category.name, "Restaurant");
+  });
 
   test("delete all localspots", async () => {
-    for(let i=0; i< testLocalSpots.length; i+= 1) {
-        // eslint-disable-next-line no-await-in-loop
-        await db.localspotStore.addLocalSpot(testLocalSpots[i]);
+    for (let i = 0; i < testLocalSpots.length; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await db.localspotStore.addLocalSpot({ ...testLocalSpots[i], userid: user._id });
     }
     let returnedLocalspots = await db.localspotStore.getAllLocalSpots();
     assert.equal(returnedLocalspots.length, 3);
     await db.localspotStore.deleteAllLocalSpots();
     returnedLocalspots = await db.localspotStore.getAllLocalSpots();
     assert.equal(returnedLocalspots.length, 0);
-    });
+  });
 
- 
-
-  test("get a localspot - success", async () => {
-  const createdLocalspot = await db.localspotStore.addLocalSpot(harbourCafe);
-  const returnedLocalspot = await db.localspotStore.getLocalSpot(createdLocalspot._id);
-  
-  // Vergleiche das Fixture (harbourCafe) mit dem Ergebnis aus der DB
-  assertSubset(harbourCafe, returnedLocalspot);
-  
-  // Die ID prüfst du separat als String
-  assert.equal(returnedLocalspot._id.toString(), createdLocalspot._id.toString());
-});
+   test("get a localspot - success", async () => {
+    const createdLocalspot = await db.localspotStore.addLocalSpot({ ...harbourCafe, userid: user._id });
+    const returnedLocalspot = await db.localspotStore.getLocalSpot(createdLocalspot._id);
+    assert.equal(returnedLocalspot.title, harbourCafe.title);
+    assert.equal(returnedLocalspot.description, harbourCafe.description);
+    assert.equal(returnedLocalspot.latitude, harbourCafe.latitude);
+    assert.equal(returnedLocalspot.longitude, harbourCafe.longitude);
+    assert.equal(returnedLocalspot.userid.toString(), user._id.toString());
+  });
 
   test("delete One localspot - success", async () => {
+    const spots = [];
     for (let i = 0; i < testLocalSpots.length; i += 1) {
       // eslint-disable-next-line no-await-in-loop
-      testLocalSpots[i] = await db.localspotStore.addLocalSpot(testLocalSpots[i]);
+      spots[i] = await db.localspotStore.addLocalSpot({ ...testLocalSpots[i], userid: user._id });
     }
-    await db.localspotStore.deleteLocalSpot(testLocalSpots[0]._id);
+    await db.localspotStore.deleteLocalSpot(spots[0]._id);
     const returnedLocalspots = await db.localspotStore.getAllLocalSpots();
     assert.equal(returnedLocalspots.length, testLocalSpots.length - 1);
-    const deletedLocalspot = await db.localspotStore.getLocalSpot(testLocalSpots[0]._id);
+    const deletedLocalspot = await db.localspotStore.getLocalSpot(spots[0]._id);
     assert.isNull(deletedLocalspot);
   });
 
@@ -71,15 +121,12 @@ suite("LocalSpots Model tests", () => {
   });
 
   test("delete One localspot - fail", async () => {
-    // 1. Erstmal Daten zum Testen laden
     for (let i = 0; i < testLocalSpots.length; i += 1) {
-      await db.localspotStore.addLocalSpot(testLocalSpots[i]);
+      // eslint-disable-next-line no-await-in-loop
+      await db.localspotStore.addLocalSpot({ ...testLocalSpots[i], userid: user._id });
     }
-    // 2. Versuch einen Eintrag zu löschen, der nicht existiert
     await db.localspotStore.deleteLocalSpot("bad-id");
-
-    // 3. Prüfen, ob noch alle da sind
     const allLocalspots = await db.localspotStore.getAllLocalSpots();
     assert.equal(allLocalspots.length, testLocalSpots.length);
   });
- });
+});

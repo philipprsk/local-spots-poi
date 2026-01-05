@@ -16,22 +16,19 @@ console.log("Cloudinary configured:", {
   api_secret: process.env.cloudinary_secret ? "✓" : "MISSING",
 });
 
-export const imageStore = { 
+export const imageStore = {
   async uploadImage(buffer) {
     return new Promise((resolve, reject) => {
       const upload = cloudinary.v2.uploader.upload_stream((err, result) => {
-        if (err) {
-          console.error("Cloudinary upload error:", err);
-          return reject(err);
-        }
-        console.log("Upload successful:", result.public_id);
-        resolve({ url: result.secure_url, public_id: result.public_id });
+        if (err) return reject(err);
+        return resolve(result);
       });
-      streamifier.createReadStream(buffer).pipe(upload);
+      upload.end(buffer);
     });
   },
 
   async deleteImage(publicId) {
-    return cloudinary.v2.uploader.destroy(publicId);
+    if (!publicId) return;
+    await cloudinary.v2.uploader.destroy(publicId);
   },
 };

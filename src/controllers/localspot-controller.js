@@ -7,7 +7,8 @@ export const localspotController = {
     handler: async (request, h) => {
       const user = request.auth.credentials;
       const localspots = await db.localspotStore.getUserLocalSpots(user._id);
-      return h.view("dashboard-view", { title: "Local Spots Dashboard", user, localspots });
+      const categories = await db.categoryStore.getAllCategories();
+      return h.view("dashboard-view", { title: "Local Spots Dashboard", user, localspots, categories });
     },
   },
 
@@ -15,8 +16,18 @@ export const localspotController = {
     validate: {
       payload: LocalSpotSpec,
       options: { abortEarly: false },
-      failAction: (request, h, error) =>
-        h.view("dashboard-view", { title: "Add local spot error", errors: error.details }).takeover().code(400),
+      failAction: async (request, h, error) => {
+        const user = request.auth.credentials;
+        const localspots = await db.localspotStore.getUserLocalSpots(user._id);
+        const categories = await db.categoryStore.getAllCategories();
+        return h.view("dashboard-view", { 
+          title: "Add local spot error", 
+          user, 
+          localspots, 
+          categories,
+          errors: error.details 
+        }).takeover().code(400);
+      },
     },
     handler: async (request, h) => {
       const user = request.auth.credentials;
@@ -26,6 +37,7 @@ export const localspotController = {
         description: request.payload.description,
         latitude: request.payload.latitude,
         longitude: request.payload.longitude,
+        category: request.payload.category,
       });
       return h.redirect("/dashboard/localspots");
     },
@@ -39,41 +51,33 @@ export const localspotController = {
   },
 
   uploadImage: {
-  payload: {
-    maxBytes: 10 * 1024 * 1024,
-    output: "data",
-    parse: true,
-    allow: "multipart/form-data",
-  },
-  handler: async (request, h) => {
-    try {
-      console.log("=== Upload Handler Started ===");
-      const spot = await db.localspotStore.getLocalSpotById(request.params.id);
-      if (!spot) return h.redirect("/dashboard/localspots");
-      
-      const buffer = request.payload.imagefile;
-      if (!buffer) {
-        console.log("No buffer");
+    payload: {
+      maxBytes: 10 * 1024 * 1024,
+      output: "data",
+      parse: true,
+      allow: "multipart/form-data",
+    },
+    handler: async (request, h) => {
+      try {
+        const spot = await db.localspotStore.getLocalSpotById(request.params.id);
+        if (!spot) return h.redirect("/dashboard/localspots");
+        
+        const buffer = request.payload.imagefile;
+        if (!buffer) return h.redirect("/dashboard/localspots");
+        
+        const result = await imageStore.uploadImage(buffer);
+        
+        await db.localspotStore.updateLocalSpot(spot._id, {
+          img: result.url,
+          imgPublicId: result.public_id,
+        });
+        return h.redirect("/dashboard/localspots");
+      } catch (error) {
+        console.error("Upload error:", error.message);
         return h.redirect("/dashboard/localspots");
       }
-
-      console.log("Buffer size:", buffer.length);
-      
-      const result = await imageStore.uploadImage(buffer);
-      console.log("Cloudinary result:", result);
-      
-      await db.localspotStore.updateLocalSpot(spot._id, {
-        img: result.url,
-        imgPublicId: result.public_id,
-      });
-      console.log("Spot updated");
-      return h.redirect("/dashboard/localspots");
-    } catch (error) {
-      console.error("Upload handler error:", error.message);
-      return h.redirect("/dashboard/localspots");
-    }
+    },
   },
-},
    
   deleteImage: {
     handler: async (request, h) => {

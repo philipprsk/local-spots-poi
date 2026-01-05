@@ -1,11 +1,10 @@
-import jwt from "jsonwebtoken";
 import axios from "axios";
 import { serviceUrl } from "../fixtures.js";
 
 export const localspotService = {
-    localspotURL: serviceUrl,
+  localspotURL: serviceUrl,
 
-    async authenticate(user) {
+  async authenticate(user) {
     const response = await axios.post(`${this.localspotURL}/api/users/authenticate`, user);
     axios.defaults.headers.common.Authorization = `Bearer ${response.data.token}`;
     return response.data;
@@ -57,6 +56,53 @@ export const localspotService = {
 
   async getLocalSpot(id) {
     const res = await axios.get(`${this.localspotURL}/api/localspots/${id}`);
+    return res.data;
+  },
+
+  async createCategory(category) {
+    const res = await axios.post(`${this.localspotURL}/api/categories`, category);
+    return res.data;
+  },
+
+  async getAllCategories() {
+    const res = await axios.get(`${this.localspotURL}/api/categories`);
+    return res.data;
+  },
+
+  async getCategory(id) {
+    const res = await axios.get(`${this.localspotURL}/api/categories/${id}`);
+    return res.data;
+  },
+
+  async deleteCategory(id) {
+    const res = await axios.delete(`${this.localspotURL}/api/categories/${id}`);
+    return res.data;
+  },
+
+  async deleteAllCategories() {
+    const res = await axios.delete(`${this.localspotURL}/api/categories`);
+    return res.data;
+  },
+
+  async uploadImage(localspotId, imageBuffer) {
+    const FormData = (await import("form-data")).default;
+    const formData = new FormData();
+    formData.append("imagefile", imageBuffer, "test.jpg");
+
+    const res = await axios.post(
+      `${this.localspotURL}/api/localspots/${localspotId}/image`,
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+        },
+      }
+    );
+    return res.data;
+  },
+
+  async deleteImage(localspotId) {
+    const res = await axios.delete(`${this.localspotURL}/api/localspots/${localspotId}/image`);
     return res.data;
   },
 };

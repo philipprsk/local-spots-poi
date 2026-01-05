@@ -11,7 +11,7 @@ import { categoryMongoStore } from "./mongo/category-mongo-store.js";
 export const db = {
   userStore: null,
   localspotStore: null,
-  categeoryStore: null,
+  categoryStore: null,
 
   init(storeType) {
     switch (storeType) {
@@ -22,7 +22,7 @@ export const db = {
       case "mongo":
         this.userStore = userMongoStore;
         this.localspotStore = localspotMongoStore;
-        this.categeoryStore = categoryMongoStore;
+        this.categoryStore = categoryMongoStore;
         connectMongo();
         break;
       case "mem":

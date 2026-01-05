@@ -1,47 +1,50 @@
 <form action="/dashboard/addlocalspot" method="POST">
   <div class="field">
     <label class="label">Name</label> 
-    <input class="input" type="text" placeholder="Enter localspot name" name="title">
+    <input class="input" type="text" placeholder="Enter localspot name" name="title" required>
   </div>
   <div class="field">
     <label class="label">Description</label> 
     <input class="input" type="text" placeholder="Enter localspot description" name="description">
   </div>
-<div class="field is-horizontal">
+  
+  <div class="field">
+    <label class="label">Category</label>
+    <div class="control">
+      <div class="select is-fullwidth">
+        <select name="category">
+          <option value="">Select a category</option>
+          {{#each categories}}
+          <option value="{{_id}}">{{icon}} {{name}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="field is-horizontal">
     <div class="field-body">
       <div class="field">
         <label class="label">Latitude</label> 
-        <input class="input" type="text" placeholder="e.g. 52.5200" name="latitude">
+        <input class="input" type="text" placeholder="e.g. 52.5200" name="latitude" required>
       </div>
       <div class="field">
         <label class="label">Longitude</label> 
-        <input class="input" type="text" placeholder="e.g. 13.4050" name="longitude">
+        <input class="input" type="text" placeholder="e.g. 13.4050" name="longitude" required>
       </div>
     </div>
   </div>
   <button class="button is-link">Add LocalSpot</button>
 </form>
 
-
 <script>
   const fileInput = document.querySelector(".file-input");
-  fileInput.onchange = () => {
-    if (fileInput.files.length > 0) {
-      const fileName = document.querySelector(".file-name");
-      fileName.textContent = fileInput.files[0].name;
-    }
-  };
+  if (fileInput) {
+    fileInput.onchange = () => {
+      if (fileInput.files.length > 0) {
+        const fileName = document.querySelector(".file-name");
+        fileName.textContent = fileInput.files[0].name;
+      }
+    };
+  }
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-</form>

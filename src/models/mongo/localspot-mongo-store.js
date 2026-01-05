@@ -6,25 +6,25 @@ export const localspotMongoStore = {
     return Localspot.find().lean();
   },
 
-  async getLocalSpot(id) {
-    if (Mongoose.isValidObjectId(id)) {
-      return Localspot.findOne({ _id: id }).lean();
-    }
-    return null;
-  },
+async addLocalSpot(localspot) {
+   const newSpot = new Localspot(localspot);
+   const saved = await newSpot.save();
+  return this.getLocalSpotById(saved._id);
+},
 
-  async getLocalSpotById(id) {
-    return this.getLocalSpot(id);
-  },
+ 
+async getLocalSpot(id) {
+  if (!id || !Mongoose.isValidObjectId(id)) return null;
+  return Localspot.findById(id).populate("category").lean();
+},
 
-  async addLocalSpot(localspot) {
-    const newLocalspot = new Localspot(localspot);
-    const localspotObj = await newLocalspot.save();
-    return this.getLocalSpot(localspotObj._id);
-  },
+async getLocalSpotById(id) {
+  if (!id || !Mongoose.isValidObjectId(id)) return null;
+  return Localspot.findById(id).populate("category").lean();
+},
 
-  async getUserLocalSpots(id) {
-    return Localspot.find({ userid: id }).lean();
+async getUserLocalSpots(id) {
+    return Localspot.find({ userid: id }).populate("category").lean();
   },
 
   async updateLocalSpot(id, update) {
@@ -32,12 +32,9 @@ export const localspotMongoStore = {
   },
 
   async deleteLocalSpot(id) {
-    try {
-      await Localspot.deleteOne({ _id: id });
-    } catch (error) {
-      console.log("bad id");
-    }
-  },
+  if (!id || !Mongoose.isValidObjectId(id)) return;
+  await Localspot.deleteOne({ _id: id });
+},
 
   async deleteLocalSpotById(id) {
     return this.deleteLocalSpot(id);

@@ -36,10 +36,11 @@ export const LocalSpotSpec = Joi.object()
     latitude: Joi.number().example(52.1234).required(),
     longitude: Joi.number().example(13.5678).required(),
     userid: IdSpec.optional(),    // Erlaubt userid, falls der Test sie mitschickt
-    categoryid: IdSpec.optional(), // Vorbereitung für Level 2
+    category: IdSpec.optional(), // Vorbereitung für Level 2
   })
   .unknown(true) // DAS HIER fixiert den "_id is not allowed" Fehler im Payload
   .label("LocalSpot");
+  
 
 // Das hier wird für die RESPONSE (Antwort vom Server) genutzt
 export const LocalSpotSpecPlus = LocalSpotSpec.keys({
@@ -55,3 +56,20 @@ export const JwtAuthSpec = Joi.object()
     token: Joi.string().example("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...").required(),
   })
   .label("JwtAuth");
+
+
+export const CategorySpec = Joi.object()
+  .keys({
+    name: Joi.string().required(),
+    slug: Joi.string().required(),
+    icon: Joi.string().optional(),
+    color: Joi.string().optional(),
+  })
+  .label("CategorySpec");
+
+export const CategorySpecPlus = CategorySpec.keys({
+  _id: IdSpec,
+  __v: Joi.number(),
+}).label("CategorySpecPlus");
+
+export const CategoryArray = Joi.array().items(CategorySpecPlus).label("CategoryArray");
