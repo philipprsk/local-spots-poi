@@ -15,36 +15,18 @@ import { validate } from "./api/jwt-utils.js";
 import { db } from "./models/db.js"; 
 import { accountsController } from "./controllers/accounts-controller.js";
 
-
-const result = dotenv.config();
-if (result.error) {
-  console.log(result.error.message);
-  process.exit(1);
-}
-
-const swaggerOptions = {
-  info: {
-    title: "Localspot API",
-    version: "0.1"
-  },
-  securityDefinitions: {
-    jwt: {
-      type: "apiKey",
-      name: "Authorization",
-      in: "header"
-    }
-  },
-  security: [{ jwt: [] }]
-};
-
+// --- FIX 1: Load dotenv ONLY if the file exists (Local) ---
+dotenv.config(); 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function init() {
+  // --- FIX 2: Dynamic Port and Host for Render ---
   const server = Hapi.server({
-    port: 3000,
-    host: "localhost",
+    port: process.env.PORT || 3000,     // Render provides the PORT env variable
+    host: "0.0.0.0",                   // MUST be 0.0.0.0 on Render to be accessible
+    routes: { cors: true }             // Good practice for APIs
   });
   
   await server.register(Cookie);
@@ -53,16 +35,17 @@ async function init() {
     Vision,
     {
       plugin: HapiSwagger,
-      options: swaggerOptions,
+      options: {
+        info: { title: "Localspot API", version: "0.1" },
+        securityDefinitions: { jwt: { type: "apiKey", name: "Authorization", in: "header" } },
+        security: [{ jwt: [] }]
+      },
     },
-]);
+  ]);
   await server.register(jwt);
 
-
   server.views({
-    engines: {
-      hbs: Handlebars,
-    },
+    engines: { hbs: Handlebars },
     relativeTo: __dirname,
     path: "./views",
     layoutPath: "./views/layouts",
@@ -73,9 +56,9 @@ async function init() {
 
   server.auth.strategy("session", "cookie", {
     cookie: {
-      name: process.env.COOKIE_NAME,
-      password: process.env.COOKIE_PASSWORD,
-      isSecure: false,
+      name: process.env.COOKIE_NAME || "localspots-cookie", // Fallback if env missing
+      password: process.env.COOKIE_PASSWORD || "secret-password-longer-than-32-chars",
+      isSecure: false, // Set to true if using HTTPS (Render provides HTTPS)
     },
     redirectTo: "/",
     validate: accountsController.validate,
@@ -85,27 +68,25 @@ async function init() {
   server.validator(Joi);
 
   server.auth.strategy("jwt", "jwt", {
-    key: process.env.COOKIE_PASSWORD,
+    key: process.env.COOKIE_PASSWORD || "secret-password-longer-than-32-chars",
     validate: validate,
     verifyOptions: { algorithms: ["HS256"] }
   });
-
 
   db.init("mongo");
 
   server.route({
       method: "GET",
-      path: "/public/{param*}", // Serve static files from /public
+      path: "/public/{param*}",
       handler: {
         directory: {
-          path: path.join(__dirname, "../public"), // Adjusted to point to the public directory
+          path: path.join(__dirname, "../public"),
           redirectToSlash: true,
           index: true,
         },
       },
       config: { auth: false } 
-    });
-
+  });
 
   server.route(webRoutes);
   server.route(apiRoutes);
