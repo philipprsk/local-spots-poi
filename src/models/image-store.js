@@ -1,6 +1,5 @@
 import * as dotenv from "dotenv";
 import * as cloudinary from "cloudinary";
-import { writeFileSync } from "fs";
 import streamifier from "streamifier";
 
 dotenv.config();
@@ -11,16 +10,21 @@ cloudinary.v2.config({
   api_secret: process.env.cloudinary_secret,
 });
 
-export const imageStore = {
-  async getAllImages() {
-    const result = await cloudinary.v2.api.resources();
-    return result.resources;
-  },
+console.log("Cloudinary configured:", {
+  cloud_name: process.env.cloudinary_name ? "✓" : "MISSING",
+  api_key: process.env.cloudinary_key ? "✓" : "MISSING",
+  api_secret: process.env.cloudinary_secret ? "✓" : "MISSING",
+});
 
+export const imageStore = {
   async uploadImage(buffer) {
     return new Promise((resolve, reject) => {
       const upload = cloudinary.v2.uploader.upload_stream((err, result) => {
-        if (err) return reject(err);
+        if (err) {
+          console.error("Cloudinary upload error:", err);
+          return reject(err);
+        }
+        console.log("Upload successful:", result.public_id);
         resolve({ url: result.secure_url, public_id: result.public_id });
       });
       streamifier.createReadStream(buffer).pipe(upload);
