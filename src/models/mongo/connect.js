@@ -22,7 +22,7 @@ async function seed(mongoose) {
 }
 
 export function connectMongo() {
-  dotenv.config();
+  dotenv.config({ path: ".env", optional: true });
 
   Mongoose.set("strictQuery", true);
   Mongoose.connect(process.env.db);
