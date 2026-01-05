@@ -2,13 +2,23 @@ import * as dotenv from "dotenv";
 import Mongoose from "mongoose";
 import * as mongooseSeeder from "mais-mongoose-seeder";
 import { seedData } from "./seed-data.js";
+import { categoryMongoStore } from "./category-mongo-store.js";
+import { userMongoStore } from "./user-mongo-store.js";
+import { localspotMongoStore } from "./localspot-mongo-store.js";
 
-const seedLib = mongooseSeeder.default;
+async function seed(mongoose) {
+  try {
+    await categoryMongoStore.getAllCategories();
+    await userMongoStore.getAllUsers();
+    await localspotMongoStore.getAllLocalSpots();
 
-async function seed() {
-  const seeder = seedLib(Mongoose);
-  const dbData = await seeder.seed(seedData, { dropDatabase: false, dropCollections: true });
-  console.log(dbData);
+    const seedLib = mongooseSeeder.default;
+    const seeder = seedLib(mongoose);
+    const dbData = await seeder.seed(seedData, { dropDatabase: false, dropCollections: true });
+    console.log("Seeding completed:", dbData);
+  } catch (err) {
+    console.log("Seeding error:", err);
+  }
 }
 
 export function connectMongo() {
@@ -28,6 +38,6 @@ export function connectMongo() {
 
   db.once("open", function () {
     console.log(`database connected to ${this.name} on ${this.host}`);
-    seed();
+    seed(Mongoose); 
   });
 }

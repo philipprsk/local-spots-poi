@@ -1,31 +1,31 @@
 export const seedData = {
-    
-  // 1. CATEGORIES
   categories: {
     _model: "Category",
     nature: {
       name: "Nature",
+      slug: "nature",
       icon: "🌳",
-      color: "#2ecc71"
+      description: "Natural spots and parks"
     },
     food: {
       name: "Food & Drink",
+      slug: "food-drink",
       icon: "🍴",
-      color: "#e74c3c"
+      description: "Restaurants and cafes"
     },
     culture: {
       name: "Culture",
+      slug: "culture",
       icon: "🏛️",
-      color: "#f1c40f"
+      description: "Museums and cultural sites"
     },
     nightlife: {
       name: "Nightlife",
+      slug: "nightlife",
       icon: "🍸",
-      color: "#9b59b6"
+      description: "Bars and clubs"
     }
   },
-
-  // 2. USERS
   users: {
     _model: "User",
     homer: {
@@ -53,37 +53,39 @@ export const seedData = {
       password: "secretpassword"
     }
   },
-
-  // 3. LOCALSPOTS (Linked to Users and Categories)
   localspots: {
     _model: "Localspot",
     harbourCafe: {
       title: "Harbour Cafe",
       description: "Best coffee by the docks with a great view of the ships.",
+      latitude: 48.1372,
+      longitude: 11.5819,
       userid: "->users.bart",
-      categories: ["->categories.food"],
-      images: [{ url: "https://example.com/cafe.jpg", altText: "Coffee cup at the harbor" }]
+      category: "->categories.food"
     },
     englishGarden: {
       title: "English Garden",
       description: "A huge city park, perfect for a sunny afternoon.",
+      latitude: 48.1641,
+      longitude: 11.5833,
       userid: "->users.lisa",
-      categories: ["->categories.nature"],
-      images: [{ url: "https://example.com/park.jpg", altText: "Green meadow in the park" }]
+      category: "->categories.nature"
     },
     moesTavern: {
       title: "Moe's Tavern",
       description: "Where everybody knows your name and the beer is cold.",
+      latitude: 48.1351,
+      longitude: 11.5823,
       userid: "->users.homer",
-      categories: ["->categories.nightlife", "->categories.food"],
-      images: [{ url: "https://example.com/moes.jpg", altText: "The dark interior of the tavern" }]
+      category: "->categories.nightlife"
     },
     springfieldMuseum: {
       title: "Springfield Museum",
       description: "Discover the rich history of our town.",
+      latitude: 48.1442,
+      longitude: 11.5761,
       userid: "->users.marge",
-      categories: ["->categories.culture"],
-      images: [{ url: "https://example.com/museum.jpg", altText: "The museum entrance" }]
+      category: "->categories.culture"
     }
   }
 };
