@@ -12,6 +12,12 @@ const localspotSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  category: {
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+  },
+  img: String,
+  imgPublicId: String,
 });
 
 export const Localspot = Mongoose.model("Localspot", localspotSchema);

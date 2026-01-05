@@ -1,0 +1,34 @@
+<div class="card">
+  <div class="card-image">
+    <figure class="image is-256x256">
+      <img src={{localspot.img}}>
+    </figure>
+  </div>
+  <div class="card-content">
+    <form action="/localspot/{{localspot._id}}/uploadimage" method="POST" enctype="multipart/form-data">
+      <div id="file-select" class="file has-name is-fullwidth">
+        <label class="file-label"> <input class="file-input" name="imagefile" type="file" name="resume" accept="image/png, image/jpeg">
+          <span class="file-cta">
+            <span class="file-icon">
+              <i class="fas fa-upload"></i>
+            </span>
+            <span class="file-label">
+              Choose a file…
+            </span>
+           </span>
+          <span class="file-name"></span>
+        </label>
+        <button type="submit" class="button is-info">Upload</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{{#if localspot.img}}
+<figure class="image is-256x256">
+  <img src="{{localspot.img}}" alt="{{localspot.title}}">
+</figure>
+<form action="/localspot/{{localspot._id}}/deleteimage" method="POST">
+  <button class="button is-small is-danger" type="submit">Remove image</button>
+</form>
+{{/if}}

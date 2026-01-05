@@ -26,7 +26,12 @@ async function init() {
   const server = Hapi.server({
     port: process.env.PORT || 3000,     // Render provides the PORT env variable
     host: "0.0.0.0",                   // MUST be 0.0.0.0 on Render to be accessible
-    routes: { cors: true }             // Good practice for APIs
+    routes: {
+    payload: {
+      maxBytes: 10 * 1024 * 1024,
+      multipart: true, 
+    },
+   },        
   });
   
   await server.register(Cookie);
