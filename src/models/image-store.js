@@ -16,7 +16,7 @@ console.log("Cloudinary configured:", {
   api_secret: process.env.cloudinary_secret ? "✓" : "MISSING",
 });
 
-export const imageStore = {
+export const imageStore = { 
   async uploadImage(buffer) {
     return new Promise((resolve, reject) => {
       const upload = cloudinary.v2.uploader.upload_stream((err, result) => {
@@ -32,6 +32,6 @@ export const imageStore = {
   },
 
   async deleteImage(publicId) {
-    await cloudinary.v2.uploader.destroy(publicId);
+    return cloudinary.v2.uploader.destroy(publicId);
   },
 };

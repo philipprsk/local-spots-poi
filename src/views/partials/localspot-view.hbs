@@ -1,9 +1,14 @@
 {{> menu}}
 
-<section class="section">
-  <div class="title">
+<section class="section columns is-vcentered">
+  <div class="column has-text-centered">
+    <div class="title">
     {{localspot.title}}
   </div>
   {{> list-localspots}}
   {{> add-localspot}}
+</div>
+ <div class="column">
+   {{> localspot-image }}
+ </div>
 </section>
