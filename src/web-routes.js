@@ -1,7 +1,10 @@
+import { config } from "dotenv";
 import { accountsController } from "./controllers/accounts-controller.js";
 import { dashboardController } from "./controllers/dashboard-controller.js";
 import { aboutController } from "./controllers/about-controller.js";    
 import { localspotController } from "./controllers/localspot-controller.js";
+import { adminController } from "./controllers/admin-controller.js";
+
 
 export const webRoutes = [
   { method: "GET", path: "/", config: accountsController.index },
@@ -22,4 +25,7 @@ export const webRoutes = [
   { method: "GET", path: "/{param*}", handler: { directory: { path: "./public" } }, options: { auth: false } },
 
   { method: "POST", path: "/localspot/{id}/deleteimage", config: localspotController.deleteImage },
+
+  { method: "GET", path: "/admin", config: adminController.index },
+  { method: "POST", path: "/admin/users/{id}/delete", config: adminController.deleteUser },
 ];

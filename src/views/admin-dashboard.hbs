@@ -1,0 +1,46 @@
+{{!-- filepath: /Users/philipprosanka/dev/local-spots-poi/src/views/admin-dashboard.hbs --}}
+{{> menu active="admin"}}
+
+<section class="section">
+  <div class="container">
+    <h1 class="title">Admin Dashboard</h1>
+    
+    {{#if isAdmin}}
+      <div class="box">
+        <h2 class="subtitle">User Management</h2>
+        
+        <table class="table is-fullwidth is-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Admin</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each users}}
+            <tr>
+              <td>{{firstName}} {{lastName}}</td>
+              <td>{{email}}</td>
+              <td>{{#if isAdmin}}✓{{/if}}</td>
+              <td>
+                {{#unless isAdmin}}
+                  <form action="/admin/users/{{_id}}/delete" method="POST" style="display:inline;">
+                    <button class="button is-danger is-small" type="submit">Delete</button>
+                  </form>
+                {{/unless}}
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    {{else}}
+      <div class="notification is-danger">
+        <strong>Access Denied</strong><br>
+        Admin privileges required.
+      </div>
+    {{/if}}
+  </div>
+</section>

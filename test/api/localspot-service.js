@@ -105,4 +105,11 @@ export const localspotService = {
     const res = await axios.delete(`${this.localspotURL}/api/localspots/${localspotId}/image`);
     return res.data;
   },
+
+  async deleteUser(id) {
+    const response = await axios.delete(`${this.localspotURL}/api/users/${id}`);
+    return response;
+  },
+
+
 };

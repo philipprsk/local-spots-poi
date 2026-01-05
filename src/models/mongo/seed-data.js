@@ -51,7 +51,16 @@ export const seedData = {
       lastName: "Simpson",
       email: "lisa@simpson.com",
       password: "secretpassword"
-    }
+    },
+
+    adminUser:{
+    firstName: "Admin",
+    lastName: "User",
+    email: "admin@example.com",
+    password: "admin",
+    isAdmin: true
+  }
+
   },
   localspots: {
     _model: "Localspot",

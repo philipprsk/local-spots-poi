@@ -11,27 +11,25 @@ import dotenv from "dotenv";
 import Joi from "joi";
 import { apiRoutes } from "./api-routes.js";
 import { webRoutes } from "./web-routes.js";
-import { validate } from "./api/jwt-utils.js";
+import { validate as jwtValidate } from "./api/jwt-utils.js";
 import { db } from "./models/db.js"; 
-import { accountsController } from "./controllers/accounts-controller.js";
+import { accountsController, validate as accountsValidate } from "./controllers/accounts-controller.js";
 
-// --- FIX 1: Load dotenv ONLY if the file exists (Local) ---
 dotenv.config(); 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function init() {
-  // --- FIX 2: Dynamic Port and Host for Render ---
   const server = Hapi.server({
-    port: process.env.PORT || 3000,     // Render provides the PORT env variable
-    host: "0.0.0.0",                   // MUST be 0.0.0.0 on Render to be accessible
+    port: process.env.PORT || 3000,
+    host: "0.0.0.0",
     routes: {
-    payload: {
-      maxBytes: 10 * 1024 * 1024,
-      multipart: true, 
-    },
-   },        
+      payload: {
+        maxBytes: 10 * 1024 * 1024,
+        multipart: true, 
+      },
+    },        
   });
   
   await server.register(Cookie);
@@ -61,12 +59,12 @@ async function init() {
 
   server.auth.strategy("session", "cookie", {
     cookie: {
-      name: process.env.COOKIE_NAME || "localspots-cookie", // Fallback if env missing
+      name: process.env.COOKIE_NAME || "localspots-cookie",
       password: process.env.COOKIE_PASSWORD || "secret-password-longer-than-32-chars",
-      isSecure: false, // Set to true if using HTTPS (Render provides HTTPS)
+      isSecure: false,
     },
     redirectTo: "/",
-    validate: accountsController.validate,
+    validate: accountsValidate,  // <-- validate (nicht validateFunc)
   });
   server.auth.default("session");
 
@@ -74,23 +72,23 @@ async function init() {
 
   server.auth.strategy("jwt", "jwt", {
     key: process.env.COOKIE_PASSWORD || "secret-password-longer-than-32-chars",
-    validate: validate,
+    validate: jwtValidate,
     verifyOptions: { algorithms: ["HS256"] }
   });
 
   db.init("mongo");
 
   server.route({
-      method: "GET",
-      path: "/public/{param*}",
-      handler: {
-        directory: {
-          path: path.join(__dirname, "../public"),
-          redirectToSlash: true,
-          index: true,
-        },
+    method: "GET",
+    path: "/public/{param*}",
+    handler: {
+      directory: {
+        path: path.join(__dirname, "../public"),
+        redirectToSlash: true,
+        index: true,
       },
-      config: { auth: false } 
+    },
+    config: { auth: false } 
   });
 
   server.route(webRoutes);

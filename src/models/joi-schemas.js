@@ -13,6 +13,7 @@ export const UserCredentialsSpec = Joi.object()
 export const UserSpec = UserCredentialsSpec.keys({
   firstName: Joi.string().example("Homer").required(),
   lastName: Joi.string().example("Simpson").required(),
+  isAdmin: Joi.boolean().optional(),
   _id: IdSpec.optional(), 
   __v: Joi.any().optional(),
 }).label("UserDetails");

@@ -1,7 +1,6 @@
 import { db } from "../models/db.js";
 import { UserSpec, UserCredentialsSpec } from "../models/joi-schemas.js";
 
-
 export const accountsController = {
   index: {
     auth: false,
@@ -26,13 +25,11 @@ export const accountsController = {
     },
     handler: async function (request, h) {
       const user = request.payload;
-
-      // NEU: Check ob User bereits existiert
-    const existingUser = await db.userStore.getUserByEmail(user.email);
-    if (existingUser) {
-      const errors = [{ message: "Email already registered. Please login or use a different email." }];
-      return h.view("signup-view", { title: "Sign up error", errors: errors }).takeover().code(400);
-    }
+      const existingUser = await db.userStore.getUserByEmail(user.email);
+      if (existingUser) {
+        const errors = [{ message: "Email already registered. Please login or use a different email." }];
+        return h.view("signup-view", { title: "Sign up error", errors: errors }).takeover().code(400);
+      }
       await db.userStore.addUser(user);
       return h.redirect("/");
     },
@@ -43,38 +40,43 @@ export const accountsController = {
       return h.view("login-view", { title: "Login to Local Spots" });
     },
   },
+  
   login: {
-    auth: false,
-    validate: {
-      payload: UserCredentialsSpec,
-      options: { abortEarly: false },
-      failAction: function (request, h, error) {
-        return h.view("login-view", { title: "Login error", errors: error.details }).takeover().code(400);
-      }
-    },
-    handler: async function (request, h) {
-      const { email, password } = request.payload;
-      const user = await db.userStore.getUserByEmail(email);
-      if (!user || user.password !== password) {
-        return h.redirect("/");
-      }
-      request.cookieAuth.set({ id: user._id });
-      return h.redirect("/dashboard");
-    },
+  auth: false,
+  validate: {
+    payload: UserCredentialsSpec,
+    options: { abortEarly: false },
+    failAction: function (request, h, error) {
+      return h.view("login-view", { title: "Login error", errors: error.details }).takeover().code(400);
+    }
   },
+  handler: async function (request, h) {
+    const { email, password } = request.payload;
+    const user = await db.userStore.getUserByEmail(email);
+    console.log("=== LOGIN ===");
+    console.log("User found:", user?.email, "isAdmin:", user?.isAdmin);
+    if (!user || user.password !== password) {
+      return h.redirect("/");
+    }
+    request.cookieAuth.set({ id: user._id });
+    return h.redirect("/dashboard");
+  },
+},
   logout: {
     handler: function (request, h) {
-    request.cookieAuth.clear();
+      request.cookieAuth.clear();
       return h.redirect("/");
     },
   },
-
-    async validate(request, session) {
-    const user = await db.userStore.getUserById(session.id);
-    if (!user) {
-      return { isValid: false };
-    }
-    return { isValid: true, credentials: user };
-  },
 };
 
+export async function validate(request, session) {
+  const user = await db.userStore.getUserById(session.id);
+  console.log("=== VALIDATE ===");
+  console.log("Session ID:", session.id);
+  console.log("User found:", user?.email, "isAdmin:", user?.isAdmin);
+  if (!user) {
+    return { isValid: false };
+  }
+  return { isValid: true, credentials: user };
+}

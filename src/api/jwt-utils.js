@@ -8,6 +8,7 @@ export function createToken(user) {
   const payload = {
     id: user._id,
     email: user.email,
+    isAdmin: user.isAdmin,
   };
   const options = {
     algorithm: "HS256",
@@ -35,3 +36,5 @@ export async function validate(decoded, request) {
   }
   return { isValid: true, credentials: user };
 }
+
+

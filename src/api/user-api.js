@@ -3,7 +3,11 @@ import { db } from "../models/db.js";
 import { UserSpec, UserSpecPlus, IdSpec, UserArray, UserCredentialsSpec, JwtAuthSpec } from "../models/joi-schemas.js";
 import { validationError } from "./logger.js";
 import { createToken } from "./jwt-utils.js";
-  
+ 
+
+const requireAdmin = (request) => {
+  if (!request.auth?.credentials?.isAdmin) throw Boom.forbidden("Admin only");
+};
 
 export const userApi = {
    authenticate: {
@@ -42,6 +46,7 @@ export const userApi = {
     },
     handler: async function (request, h) {
       try {
+        requireAdmin(request);
         const users = await db.userStore.getAllUsers();
         return users;
       } catch (err) {
@@ -60,6 +65,7 @@ export const userApi = {
     },
     handler: async function (request, h) {
       try {
+        requireAdmin(request);
         const user = await db.userStore.getUserById(request.params.id);
         if (!user) {
           return Boom.notFound("No User with this id");
@@ -104,6 +110,7 @@ export const userApi = {
     },
     handler: async function (request, h) {
       try {
+        requireAdmin(request);
         await db.userStore.deleteAll();
         return h.response().code(204);
       } catch (err) {
@@ -113,5 +120,15 @@ export const userApi = {
     tags: ["api"],
     description: "Delete all userApi",
     notes: "All userApi removed from Playtime",
+  },
+
+  deleteOne: {
+    auth: { strategy: "jwt" },
+    handler: async (request, h) => {
+      requireAdmin(request);
+      await db.userStore.deleteUserById(request.params.id);
+      return h.response().code(204);
+    },
+  
   },
 };
