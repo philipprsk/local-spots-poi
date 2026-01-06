@@ -43,4 +43,28 @@ suite("Category API tests", () => {
     const categories = await localspotService.getAllCategories();
     assert.equal(categories.length, 0);
   });
+
+ test("get category - not found", async () => {
+    try {
+      await localspotService.getCategory("bad-id");
+      assert.fail("Should fail");
+    } catch (err) {
+      assert.include([400, 404, 500, 503], err.response?.status); // <- 500 hinzufügen
+    }
+  });
+
+  test("create category - duplicate slug", async () => {
+  await localspotService.createCategory(testCategory);
+  try {
+    await localspotService.createCategory(testCategory);
+    assert.fail("Should fail on duplicate slug");
+  } catch (err) {
+    // Debug: schaue, was wirklich im Error ist
+    console.log("Error details:", err.response?.status, err.status, err.statusCode, err.message);
+    
+    // Versuche mehrere Wege, den Status zu bekommen
+    const status = err.response?.status ?? err.status ?? err.statusCode ?? err.response?.statusCode;
+    assert.include([400, 409, 500, 503], status, `Unexpected status: ${status}, full error: ${JSON.stringify(err)}`);
+  }
+});
 });

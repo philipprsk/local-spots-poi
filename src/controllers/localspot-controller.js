@@ -4,23 +4,22 @@ import { imageStore } from "../models/image-store.js";
 
 export const localspotController = {
   index: {
-    auth: {
-      strategy: "session",
-      mode: "required",
-    },
+    auth: { strategy: "session" },
     handler: async (request, h) => {
       const user = request.auth.credentials;
-      console.log("=== DASHBOARD ===");
-      console.log("User:", user.email);
-      console.log("isAdmin:", user.isAdmin);
+      const userId = user._id ?? user.id;
       
-      const localspots = await db.localspotStore.getUserLocalSpots(user._id);
-      const categories = await db.categoryStore.getAllCategories();
-      return h.view("dashboard-view", { 
-        title: "Local Spots Dashboard", 
-        user: user,
-        localspots: localspots, 
-        categories: categories 
+      const [categories, localspots] = await Promise.all([
+        db.categoryStore.getAllCategories(),
+        db.localspotStore.getUserLocalSpots(userId),
+      ]);
+
+      return h.view("dashboard-view", {
+        title: "Dashboard",
+        user: user,              
+        isAdmin: user.isAdmin,   
+        categories,
+        localspots,
       });
     },
   },

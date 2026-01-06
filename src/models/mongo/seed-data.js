@@ -58,7 +58,7 @@ export const seedData = {
     lastName: "User",
     email: "admin@example.com",
     password: "admin",
-    isAdmin: true
+    isAdmin: true,
   }
 
   },

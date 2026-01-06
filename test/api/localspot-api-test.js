@@ -3,25 +3,19 @@ import { assert } from "chai";
 import { localspotService } from "./localspot-service.js";
 import { assertSubset } from "../test-utils.js";
 import { maggie, harbourCafe, testLocalSpots, maggieCredentials } from "../fixtures.js";
+import { setupTestDatabase } from "./test-helpers.js";
 
 EventEmitter.setMaxListeners(25);
 
-
 suite("Localspot API tests", () => {
-    let user = null;
+  let user = null;
 
   setup(async () => {
-    localspotService.clearAuth();
-    user = await localspotService.createUser(maggie);
-    await localspotService.authenticate(maggieCredentials);
-    await localspotService.deleteAllLocalSpots();
-    await localspotService.deleteAllUsers();
+    await setupTestDatabase();
     user = await localspotService.createUser(maggie);
     await localspotService.authenticate(maggieCredentials);
     harbourCafe.userid = user._id;
   });
-
-  teardown(async () => {});
 
   test("create localspot", async () => {
     const returnedLocalspot = await localspotService.createLocalSpot(harbourCafe);
@@ -34,7 +28,7 @@ suite("Localspot API tests", () => {
     const response = await localspotService.deleteLocalSpot(localspot._id);
     assert.equal(response.status, 204);
     try {
-      const returnedLocalspot = await localspotService.getLocalSpot(localspot.id);
+      await localspotService.getLocalSpot(localspot.id);
       assert.fail("Should not return a response");
     } catch (error) {
       assert(error.response.data.message === "No LocalSpot with this id");
@@ -56,7 +50,7 @@ suite("Localspot API tests", () => {
 
   test("remove non-existant localspot", async () => {
     try {
-      const response = await localspotService.deleteLocalSpot("not an id");
+      await localspotService.deleteLocalSpot("not an id");
       assert.fail("Should not return a response");
     } catch (error) {
       assert(error.response.data.message === "No LocalSpot with this id", "Incorrect Response Message");

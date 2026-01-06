@@ -27,6 +27,6 @@ export const userMemStore = {
   },
 
   async deleteAll() {
-    users = [];
+    this.users = [];
   },
 };

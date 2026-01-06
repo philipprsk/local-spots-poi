@@ -124,11 +124,25 @@ export const userApi = {
 
   deleteOne: {
     auth: { strategy: "jwt" },
-    handler: async (request, h) => {
-      requireAdmin(request);
-      await db.userStore.deleteUserById(request.params.id);
+    handler: async function (request, h) {
+    try {
+      const user = await db.userStore.getUserById(request.params.id);
+      if (!user) {
+        return Boom.notFound("No User with this id");
+      }
+      // Nur Admins dürfen User löschen
+      if (!request.auth.credentials.isAdmin) {
+        return Boom.unauthorized("Admin access required");
+      }
+      await db.userStore.deleteUserById(user._id);
       return h.response().code(204);
-    },
-  
+    } catch (err) {
+      return Boom.serverUnavailable("No User with this id");
+    }
   },
+  tags: ["api"],
+  description: "Delete a user (Admin only)",
+  notes: "Deletes a user by ID",
+  validate: { params: { id: IdSpec }, failAction: validationError },
+},
 };

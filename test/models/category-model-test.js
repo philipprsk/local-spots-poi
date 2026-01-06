@@ -13,8 +13,11 @@ const testCategory = {
 suite("Category Model tests", () => {
   EventEmitter.setMaxListeners(25);
 
+  suiteSetup(async () => {
+    await db.init("mongo");
+  });
+
   setup(async () => {
-    db.init("mongo");
     await db.categoryStore.deleteAll();
   });
 
@@ -51,4 +54,5 @@ suite("Category Model tests", () => {
     const categories = await db.categoryStore.getAllCategories();
     assert.equal(categories.length, 0);
   });
+
 });

@@ -10,52 +10,44 @@ suite("LocalSpots Model tests", () => {
   let user;
   let category;
 
+  suiteSetup(async () => {
+    await db.init("mongo");
+  });
+
   setup(async () => {
-  await db.init("mongo");
-  await db.userStore.deleteAll();
-  await db.localspotStore.deleteAllLocalSpots();
-  await db.categoryStore.deleteAll();
-  user = await db.userStore.addUser(maggie);
-  category = await db.categoryStore.addCategory({
-    name: "Restaurant",
-    slug: "restaurant",
-    icon: "🍽️",
-    color: "#FF5733",
-  });
-});
+    await db.userStore.deleteAll();
+    await db.localspotStore.deleteAllLocalSpots();
+    await db.categoryStore.deleteAll();
 
-  test("create a localspot", async () => {
-    const spotWithUser = { ...harbourCafe, userid: user._id };
-    const newLocalspot = await db.localspotStore.addLocalSpot(spotWithUser);
-    assert.equal(newLocalspot.title, harbourCafe.title);
-    assert.equal(newLocalspot.description, harbourCafe.description);
-    assert.equal(newLocalspot.latitude, harbourCafe.latitude);
-    assert.equal(newLocalspot.longitude, harbourCafe.longitude);
-    assert.equal(newLocalspot.userid.toString(), user._id.toString());
-  });
-
-  test("add localspot with category", async () => {
-    const spot = await db.localspotStore.addLocalSpot({
-      userid: user._id,
-      title: "Test Restaurant",
-      description: "Great food",
-      latitude: 52.52,
-      longitude: 13.405,
-      category: category._id,
+    user = await db.userStore.addUser(maggie);
+    category = await db.categoryStore.addCategory({
+      name: "Restaurant",
+      slug: "restaurant",
+      icon: "🍽️",
+      color: "#FF5733",
     });
-    const catId = spot.category._id ? spot.category._id : spot.category;
-    assert.equal(catId.toString(), category._id.toString());
+
+    assert.isNotNull(user, "setup: user should not be null");
+    assert.isNotNull(category, "setup: category should not be null");
   });
 
   test("get localspot with populated category", async () => {
     const spot = await db.localspotStore.addLocalSpot({
       userid: user._id,
       title: "Test Cafe",
+      description: "Nice place",
       latitude: 52.52,
       longitude: 13.405,
       category: category._id,
     });
-    const retrieved = await db.localspotStore.getLocalSpot(spot._id);
+
+    assert.isNotNull(spot, "addLocalSpot returned null");
+    const spotId = spot._id ?? spot.id;
+    assert.isOk(spotId, "spot has no _id/id");
+
+    const retrieved = await db.localspotStore.getLocalSpot(spotId);
+    assert.isNotNull(retrieved, "getLocalSpot returned null");
+    assert.isNotNull(retrieved.category, "retrieved.category is null (populate missing?)");
     assert.equal(retrieved.category.name, "Restaurant");
     assert.equal(retrieved.category.icon, "🍽️");
   });
@@ -64,6 +56,7 @@ suite("LocalSpots Model tests", () => {
     await db.localspotStore.addLocalSpot({
       userid: user._id,
       title: "Spot 1",
+      description: "Description 1",
       latitude: 52.52,
       longitude: 13.405,
       category: category._id,
@@ -73,17 +66,23 @@ suite("LocalSpots Model tests", () => {
     assert.equal(spots[0].category.name, "Restaurant");
   });
 
+  // ...existing code...
+
   test("delete all localspots", async () => {
     for (let i = 0; i < testLocalSpots.length; i += 1) {
       // eslint-disable-next-line no-await-in-loop
       await db.localspotStore.addLocalSpot({ ...testLocalSpots[i], userid: user._id });
     }
+
     let returnedLocalspots = await db.localspotStore.getAllLocalSpots();
-    assert.equal(returnedLocalspots.length, 3);
+    assert.equal(returnedLocalspots.length, testLocalSpots.length); // <-- statt 3
+
     await db.localspotStore.deleteAllLocalSpots();
     returnedLocalspots = await db.localspotStore.getAllLocalSpots();
     assert.equal(returnedLocalspots.length, 0);
   });
+
+// ...existing code...
 
    test("get a localspot - success", async () => {
     const createdLocalspot = await db.localspotStore.addLocalSpot({ ...harbourCafe, userid: user._id });

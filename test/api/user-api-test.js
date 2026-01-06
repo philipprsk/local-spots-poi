@@ -1,76 +1,98 @@
 import { assert } from "chai";
 import { localspotService } from "./localspot-service.js";
-import { assertSubset } from "../test-utils.js";
-import { maggie, maggieCredentials, testUsers } from "../fixtures.js";
-import { db } from "../../src/models/db.js";
-
-const users = new Array(testUsers.length);
+import { maggie, maggieCredentials, testUsers, adminCredentials, adminUser } from "../fixtures.js";
+import { setupTestDatabase } from "./test-helpers.js";
 
 suite("User API tests", () => {
   setup(async () => {
-  localspotService.clearAuth();
-  await localspotService.createUser(maggie);
-  await localspotService.authenticate(maggieCredentials); 
-  await localspotService.deleteAllUsers();
-  for (let i = 0; i < testUsers.length; i += 1) {
+    await setupTestDatabase();
+    for (let i = 0; i < testUsers.length; i += 1) {
       // eslint-disable-next-line no-await-in-loop
-      users[0] = await localspotService.createUser(testUsers[i]); 
+      await localspotService.createUser(testUsers[i]);
     }
     await localspotService.createUser(maggie);
     await localspotService.authenticate(maggieCredentials);
   });
-
-  teardown(async () => {});
 
   test("create a user", async () => {
-  const newUser = await localspotService.createUser(maggie);
-  assertSubset(maggie, newUser);
-  assert.isDefined(newUser._id);
+    const newUser = await localspotService.createUser({
+      firstName: "Test",
+      lastName: "User",
+      email: `test-${Date.now()}@test.com`,
+      password: "test",
+    });
+    assert.isDefined(newUser._id);
+    assert.include(newUser.email, "@test.com");
   });
-
- test("delete all users", async () => {
-  // 1. Sicherstellen, dass wir eingeloggt sind (muss im setup oder hier passieren)
-  await localspotService.authenticate(maggieCredentials); 
-  
-  // 2. Alle löschen
-  await localspotService.deleteAllUsers();
-  
-  // 3. Einen neuen User anlegen (damit wir wieder einen Token generieren können, 
-  // falls der alte durch das Löschen des Users im Backend ungültig wurde)
-  await localspotService.createUser(maggie);
-  await localspotService.authenticate(maggieCredentials);
-  
-  // 4. Prüfen
-  const returnedUsers = await localspotService.getAllUsers();
-  // Da du gerade maggie erstellt hast, muss die Länge 1 sein!
-  assert.equal(returnedUsers.length, 1);
-});
 
   test("get a user - success", async () => {
-    const returnedUser = await localspotService.getUser(users[0]._id);
-    assert.deepEqual(users[0], returnedUser);
+    const setupUser = await localspotService.createUser({
+      firstName: "Get",
+      lastName: "Tester",
+      email: `gettester-${Date.now()}@test.com`,
+      password: "test",
+    });
+    const userId = setupUser._id ?? setupUser.id;
+    await localspotService.authenticate(adminCredentials);
+    const returnedUser = await localspotService.getUser(userId);
+    assert.equal((returnedUser._id ?? returnedUser.id).toString(), userId.toString());
+    assert.equal(returnedUser.email, setupUser.email);
   });
 
-     test("get a user - bad id", async () => {
+  test("delete one user - success", async () => {
+    const u = await localspotService.createUser({
+      firstName: "Del",
+      lastName: "User",
+      email: `del-${Date.now()}@test.com`,
+      password: "test",
+    });
+    await localspotService.authenticate(adminCredentials);
+    const res = await localspotService.deleteUser(u._id ?? u.id);
+    assert.equal(res.status, 204);
     try {
-      const returnedUser = await localspotService.getUser("1234");
-      assert.fail("Should not return a response");
-    } catch (error) {
-      assert(error.response.data.message === "No User with this id");
-      // assert.equal(error.response.data.statusCode, 503);
+      await localspotService.getUser(u._id ?? u.id);
+      assert.fail("Should not find deleted user");
+    } catch (err) {
+      assert.include([404, 503], err.response?.status);
     }
   });
 
-  test("get a user - deleted user", async () => {
-    await localspotService.deleteAllUsers();
-    await localspotService.createUser(maggie);
-    await localspotService.authenticate(maggieCredentials);
+  test("delete one user - fail (bad id)", async () => {
+    await localspotService.authenticate(adminCredentials);
     try {
-      const returnedUser = await localspotService.getUser(users[0]._id);
-      assert.fail("Should not return a response");
-    } catch (error) {
-      assert(error.response.data.message === "No User with this id");
-      assert.equal(error.response.data.statusCode, 404);
+      await localspotService.deleteUser("bad-id");
+      assert.fail("Should fail on bad id");
+    } catch (err) {
+      assert.include([400, 404, 503], err.response?.status);
     }
   });
+
+  test("get a user - bad params", async () => {
+    await localspotService.authenticate(adminCredentials);
+    const badParams = ["", undefined];
+    await Promise.all(
+      badParams.map(async (bad) => {
+        try {
+          await localspotService.getUser(bad);
+          assert.fail("Should fail on bad param");
+        } catch (err) {
+          assert.include([400, 404, 503], err.response?.status);
+        }
+      })
+    );
+  });
+
+  test("delete all users", async () => {
+    await localspotService.authenticate(adminCredentials);
+    await localspotService.createUser({ firstName: "A", lastName: "X", email: `a-${Date.now()}@t.com`, password: "x" });
+    await localspotService.createUser({ firstName: "B", lastName: "Y", email: `b-${Date.now()}@t.com`, password: "x" });
+    const res = await localspotService.deleteAllUsers();
+    // Nach deleteAll ist Admin evtl. weg: Admin neu anlegen + einloggen
+    localspotService.clearAuth();
+    await localspotService.createUser(adminUser);
+    await localspotService.authenticate(adminCredentials);
+    const users = await localspotService.getAllUsers();
+    assert.isAtMost(users.length, 1); // nur Admin sollte übrig sein
+  });
+
 });

@@ -29,6 +29,10 @@ async function init() {
         maxBytes: 10 * 1024 * 1024,
         multipart: true, 
       },
+      timeout: {
+        server: 60000,
+        socket: 60000,
+      },
     },        
   });
   
