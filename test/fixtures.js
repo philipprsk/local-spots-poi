@@ -16,14 +16,13 @@ export const maggieCredentials = {
 export const adminUser = {
   firstName: "Admin",
   lastName: "User",
-  email: "admin@example.com",
+  email: "admin@localspots.com",
   password: "secret",
-  isAdmin: true, // falls dein User-Schema/Admin-Checks das nutzt
+  isAdmin: true,
 };
-
 export const adminCredentials = {
-  email: adminUser.email,
-  password: adminUser.password,
+  email: "admin@localspots.com",
+  password: "secret",
 };
 
 export const testUsers = [
