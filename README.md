@@ -5,7 +5,7 @@ This web application allows users to manage and organize interesting locations (
 Current Status: Level 2 – Enhanced API & Cloud Deployment
 Features
 Level 1
-✅ User authentication with cookie-based sessions
+##   User authentication with cookie-based sessions
 ✅ Placemark CRUD (name, description, coordinates)
 ✅ JSON data storage (Lowdb)
 ✅ Core unit tests
