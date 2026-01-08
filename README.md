@@ -91,11 +91,6 @@ Deployed on **Render** with **MongoDB Atlas**. Configure environment variables i
 - `develop` - Integration
 - `feature/*` - New features
 
-### Releases
-- `v1.0.0` - Level 1: Core API
-- `v2.0.0` - Level 2: Categories & Cloud
-- `v3.0.0` - Level 3: Password hashing (upcoming)
-
 ## Next Steps (Level 3)
 - Password hashing with bcrypt
 - SvelteKit frontend
