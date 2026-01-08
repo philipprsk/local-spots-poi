@@ -1,36 +1,79 @@
-# Local Spots POI - Web Application (Level 1)
-
+# Local Spots POI 
 ## Project Overview
 This web application allows users to manage and organize interesting locations (Points of Interest). The project was developed as part of the Full Stack Web Development assignment, focusing on a robust MVC architecture and secure authentication.
 
-### Status: Level 1 – Core API & Web App
-- **Signup & Login:** Full user registration and authentication flow.
-- **Cookie Authentication:** Secure session management using `@hapi/cookie`.
-- **Placemark Features:** Users can create entries with Name, Description, and Geographic Coordinates (Latitude/Longitude).
-- **Data Persistence:** File-based storage using JSON (Lowdb).
-- **Deployment:** Optimized for Localhost environment.
-- **DevOps:** Structured Git commit history and automated linting.
+Current Status: Level 2 – Enhanced API & Cloud Deployment
+Features
+Level 1
+✅ User authentication with cookie-based sessions
+✅ Placemark CRUD (name, description, coordinates)
+✅ JSON data storage (Lowdb)
+✅ Core unit tests
+Level 2
+✅ Admin dashboard (list/remove users)
+✅ Categories for placemarks
+✅ Image uploads via Cloudinary
+✅ MongoDB with Mongoose
+✅ OpenAPI/Swagger documentation
+✅ Cloud deployment on Render
+✅ Feature branches & tagged releases
+Tech Stack
+Backend: Node.js, Hapi.js
+Database: MongoDB (Mongoose)
+Authentication: @hapi/cookie
+File Storage: Cloudinary
+Validation: Joi
+Testing: Mocha, Chai
+Documentation: Hapi-Swagger
 
-## Tech Stack
-- **Backend:** Node.js with the Hapi.js framework.
-- **Frontend:** Handlebars (HBS) templating engine with Bulma CSS framework.
-- **Validation:** Joi Schemas for payload validation and data integrity.
-- **Testing:** Mocha & Chai for Core Unit Tests.
+Quick Start
 
-## Installation & Setup
-1. Clone the repository.
-2. Install dependencies:
-   ```bash
+1. Clone and install:
+   git clone https://github.com/philipprsk/local-spots-poi-backend.git
+   cd local-spots-poi-backend
    npm install
-3. Create a .env file in the root directory (refer to .env.example for required keys):
-    COOKIE_NAME=your_cookie_name
-    COOKIE_PASSWORD=your_32_character_password
-4. Start the server: 
-   npm run start
-5. Access the application: http://localhost:3000
-   Note: On the first launch, the application will use the initialized JSON structure. You can start by registering a new user.
-6. API & Testing
-This project includes automated unit tests to ensure the integrity of the models and stores. To run the test suite:
-    Bash
-    npm test
+
+2. Configure .env:
+   PORT=3000
+   COOKIE_NAME=local-spots-session
+   COOKIE_PASSWORD=your_secure_32_character_password
+   MONGODB_URI=mongodb://localhost:27017/local-spots
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
+
+3. Start server:
+   npm start
+
+4. Access:
+   
+   API: http://localhost:3000
+   Swagger Docs: http://localhost:3000/documentation
+   
+   Main API Endpoints
+   
+   Authentication
+   POST /api/users/authenticate - Login
+   POST /api/users/create - Register
+   GET /api/users/logout - Logout
+   
+   Placemarks
+   GET /api/placemarks - List all
+   POST /api/placemarks - Create
+   PUT /api/placemarks/{id} - Update
+   DELETE /api/placemarks/{id} - Delete
+   POST /api/placemarks/{id}/images - Upload images
+   
+   Admin
+   GET /api/users - List all users
+   DELETE /api/users/{id} - Remove user
+   
+   Testing
+   npm test
+
+   Deployment
+   Deployed on Render with MongoDB Atlas. Configure environment variables in Render dashboard.
+
+
+
 
