@@ -22,10 +22,16 @@ suite("Category Model tests", () => {
   });
 
   test("create a category", async () => {
+    try {
     const newCategory = await db.categoryStore.addCategory(testCategory);
     assertSubset(testCategory, newCategory);
     assert.isDefined(newCategory._id);
-  });
+    } catch (err) {
+  console.error("Category create error:", err);
+  
+  assert.fail(err.message);
+  }
+});
 
   test("get all categories", async () => {
     await db.categoryStore.addCategory(testCategory);
@@ -55,4 +61,20 @@ suite("Category Model tests", () => {
     assert.equal(categories.length, 0);
   });
 
+   test("get category by slug", async () => {
+    const created = await db.categoryStore.addCategory(testCategory);
+    const retrieved = await db.categoryStore.getCategoryBySlug(testCategory.slug);
+    assertSubset(testCategory, retrieved);
+  });
+
+  test("update category", async () => {
+    const created = await db.categoryStore.addCategory(testCategory);
+    const updated = await db.categoryStore.updateCategory(created._id, {
+      name: "Fine Dining",
+      color: "#000000",
+    });
+    assert.equal(updated.name, "Fine Dining");
+    assert.equal(updated.color, "#000000");
+  });
+  
 });

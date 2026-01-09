@@ -1,4 +1,5 @@
 import Mongoose from "mongoose";
+import bcrypt from "bcrypt";
 import { User } from "./user.js";
 
 export const userMongoStore = {
@@ -8,28 +9,42 @@ export const userMongoStore = {
   },
 
   async getUserById(id) {
-    if (Mongoose.isValidObjectId(id)) {
+    if (id && Mongoose.isValidObjectId(id)) {
       const user = await User.findOne({ _id: id }).lean();
       return user;
     }
     return null;
   },
 
-  async addUser(user) {
-    const newUser = new User(user);
-    const userObj = await newUser.save();
-    const u = await this.getUserById(userObj._id);
-    return u;
+  async addUser(userData) {
+    try {
+      // Create a copy to avoid modifying the original object
+      const user = { ...userData };
+      // Always hash the password before storing
+      if (user.password) {
+        user.password = await bcrypt.hash(user.password, 10);
+      }
+      const newUser = new User(user);
+      const userObj = await newUser.save();
+      // Return lean object
+      return userObj.toObject();
+    } catch (error) {
+      console.error("Error adding user:", error.message);
+      throw error;
+    }
   },
 
   async getUserByEmail(email) {
+    if (!email) return null;
     const user = await User.findOne({ email: email }).lean();
     return user;
   },
 
   async deleteUserById(id) {
     try {
-      await User.deleteOne({ _id: id });
+      if (id && Mongoose.isValidObjectId(id)) {
+        await User.deleteOne({ _id: id });
+      }
     } catch (error) {
       console.log("bad id");
     }

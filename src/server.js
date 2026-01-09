@@ -15,12 +15,16 @@ import { validate as jwtValidate } from "./api/jwt-utils.js";
 import { db } from "./models/db.js"; 
 import { accountsController, validate as accountsValidate } from "./controllers/accounts-controller.js";
 
+// ...existing imports...
+
 dotenv.config(); 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function init() {
+  await db.init("mongo"); // <-- HIER muss es stehen!
+
   const server = Hapi.server({
     port: process.env.PORT || 3000,
     host: "0.0.0.0",
@@ -35,7 +39,10 @@ async function init() {
       },
     },        
   });
-  
+
+  // ...restlicher Code wie gehabt...
+  // (KEINE weitere async function init() mehr!)
+
   await server.register(Cookie);
   await server.register([
     Inert,
@@ -68,7 +75,7 @@ async function init() {
       isSecure: false,
     },
     redirectTo: "/",
-    validate: accountsValidate,  // <-- validate (nicht validateFunc)
+    validate: accountsValidate,
   });
   server.auth.default("session");
 
@@ -79,8 +86,6 @@ async function init() {
     validate: jwtValidate,
     verifyOptions: { algorithms: ["HS256"] }
   });
-
-  db.init("mongo");
 
   server.route({
     method: "GET",

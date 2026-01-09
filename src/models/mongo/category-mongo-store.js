@@ -15,7 +15,9 @@ export const categoryMongoStore = {
 
   async addCategory(category) {
     const newCategory = new Category(category);
-    return newCategory.save();
+    const savedCategory = await newCategory.save();
+    // Convert to lean object for consistency
+    return savedCategory.toObject ? savedCategory.toObject() : savedCategory;
   },
 
   async updateCategory(id, category) {
