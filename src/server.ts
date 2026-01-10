@@ -49,6 +49,8 @@ async function init() {
       },
     },
   ]);
+
+
   await server.register(jwt);
 
   server.views({

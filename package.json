@@ -3,23 +3,24 @@
   "version": "2.1.0",
   "description": "First Typescript version of Local Spots POI",
   "license": "ISC",
+  "type": "module",
   "author": "",
   "main": "dist/server.js",
   "mocha": {
-  "require": ["ts-node/register"],
-  "extension": ["ts"],
-  "spec": "test/**/*.ts"
-},
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.ts"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json && mkdir -p dist/views dist/public && cp -R src/views/* dist/views/ && cp -R public/* dist/public/",
     "start": "npm run build && node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint . --ext .ts",
-    "test": "mocha --require ts-node/esm --ui tdd --timeout 10000 \"test/**/*.ts\"",
-    "testmodels": "mocha --require ts-node/esm --ui tdd \"test/models/**/*.ts\"",
-    "testapi": "mocha --require ts-node/esm --ui tdd \"test/api/**/*.ts\""
+    "test": "tsx --test \"test/**/*.ts\"",
+    "testmodels": "mocha --loader tsx --ui tdd \"test/models/**/*.ts\"",
+    "testapi": "mocha --loader tsx --ui tdd \"test/api/**/*.ts\""
   },
-
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/chai": "^5.2.3",
@@ -44,7 +45,6 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
-  
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "@hapi/cookie": "^12.0.1",

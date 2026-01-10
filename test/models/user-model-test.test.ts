@@ -1,6 +1,6 @@
 import { assert } from "chai";
-import bcrypt from "bcrypt";
 import { db } from "../../src/models/db";
+import bcrypt from "bcrypt";
 import { maggie, testUsers } from "../fixtures.test";
 import { assertSubset } from "../test-utils.test";
 import { User } from "../../src/types/models";
