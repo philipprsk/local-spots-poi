@@ -1,5 +1,5 @@
 import Mongoose, { Document, Types } from "mongoose";
-import { Category as CategoryType } from "../../types/models";
+import { Category as CategoryType } from "../../types/localspot-types";
 
 export interface CategoryDocument extends Omit<CategoryType, "_id">, Document {
   _id: Types.ObjectId;

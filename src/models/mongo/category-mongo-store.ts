@@ -1,5 +1,5 @@
 import { Category } from "./category";
-import { Category as CategoryType } from "../../types/models"; // Importiere den Typ
+import { Category as CategoryType } from "../../types/localspot-types"; // Importiere den Typ
 
 export const categoryMongoStore = {
   async getAllCategories(): Promise<CategoryType[]> {

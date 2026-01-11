@@ -4,7 +4,7 @@ import { db } from "../models/db";
 import { IdSpec, LocalSpotSpec, LocalSpotSpecPlus, LocalSpotArray } from "../models/joi-schemas";
 import { validationError } from "./logger";
 import { imageStore } from "../models/image-store";
-import { User, LocalSpot } from "../types/models";
+import { User, LocalSpot } from "../types/localspot-types";
 
 export const localspotApi = {
   find: {
@@ -43,7 +43,7 @@ export const localspotApi = {
     response: { schema: LocalSpotSpecPlus, failAction: validationError },
   },
 
-  create: {
+ create: {
     auth: { strategy: "jwt" },
     tags: ["api"],
     description: "Create a localspot",
@@ -53,13 +53,28 @@ export const localspotApi = {
     handler: async (request: Request, h: ResponseToolkit) => {
       try {
         const user = request.auth.credentials as User;
-        const userId = typeof user._id === "string" ? user._id : "";        
-        const localspotPayload = { ...(request.payload as LocalSpot), userid: userId };
+        
+        // FIX: Safely convert ObjectId to string, or fallback to empty string
+        const userId = user._id ? user._id.toString() : "";
+        
+        // Debug Log: Check if we actually have an ID now
+        console.log("Creating LocalSpot for User ID:", userId);
+
+        const localspotPayload = { 
+          ...(request.payload as LocalSpot), 
+          userid: userId 
+        };
+        
         const localspot = await db.localspotStore.addLocalSpot(localspotPayload);
-        if (localspot) return h.response(localspot).code(201);
+        
+        if (localspot) {
+          return h.response(localspot).code(201);
+        }
         return Boom.badImplementation("error creating localspot");
-      } catch (err) {
-        return Boom.badImplementation("Database error");
+      } catch (err: any) { // Type as 'any' to access .message
+        // IMPORTANT: Log the real error to see why the DB failed
+        console.error("❌ LocalSpot Create Error:", err.message); 
+        return Boom.badImplementation("Database error: " + err.message);
       }
     },
   },
@@ -104,7 +119,7 @@ export const localspotApi = {
   tags: ["api"],
   description: "Upload image to localspot",
   notes: "Stores image and returns updated localspot",
-  payload: { multipart: true, output: "stream", parse: true, maxBytes: 5 * 1024 * 1024 },
+  payload: { multipart: true, output: "stream" as const, parse: true, maxBytes: 5 * 1024 * 1024 },
   handler: async (request: Request, h: ResponseToolkit) => {
     const { id } = request.params;
     const localspot = await db.localspotStore.getLocalSpot(id);
@@ -121,12 +136,12 @@ export const localspotApi = {
           const buffer = Buffer.concat(chunks);
           const uploaded = await imageStore.uploadImage(buffer);
           const updated = await db.localspotStore.updateLocalSpot(
-            typeof localspot._id === "string" ? localspot._id : "",
-            {
-              img: uploaded.url,
-              imgPublicId: uploaded.public_id,
-            }
-          );
+        localspot._id.toString(), 
+        {
+          img: uploaded.url,
+          imgPublicId: uploaded.public_id,
+        }
+      );
           if (!updated) {
             return reject(Boom.badImplementation("LocalSpot update failed"));
           }

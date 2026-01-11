@@ -1,7 +1,7 @@
 import axios from "axios";
 import { serviceUrl } from "../fixtures.test";
-import { User } from "../../src/types/models";
-import { LocalSpot } from "../../src/types/models";
+import { User } from "../../src/types/localspot-types";
+import { LocalSpot } from "../../src/types/localspot-types";
 
 export const localspotService = {
   localspotURL: serviceUrl,

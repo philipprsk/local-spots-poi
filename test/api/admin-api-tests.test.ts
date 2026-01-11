@@ -2,7 +2,7 @@ import { assert } from "chai";
 import { localspotService } from "./localspot-service.test";
 import { maggie, maggieCredentials, adminCredentials, adminUser } from "../fixtures.test";
 import { setupTestDatabase } from "./test-helpers.test";
-import { User } from "../../src/types/models";
+import { User } from "../../src/types/localspot-types";
 
 describe("Admin API tests", () => {
   beforeEach(async () => {

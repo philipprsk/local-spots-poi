@@ -1,5 +1,5 @@
 import Mongoose from "mongoose";
-import { User as UserType } from "../../types/models";
+import { User as UserType } from "../../types/localspot-types";
 import bcrypt from "bcrypt";
 
 const { Schema } = Mongoose;
@@ -7,7 +7,7 @@ const { Schema } = Mongoose;
 const userSchema = new Schema<UserType>({
   firstName: String,
   lastName: String,
-  email: String,
+  email: { type: String, unique: true, required: true },
   password: String,
   isAdmin: {
     type: Boolean,

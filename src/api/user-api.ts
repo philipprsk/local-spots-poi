@@ -5,7 +5,7 @@ import { db } from "../models/db";
 import { UserSpec, UserSpecPlus, IdSpec, UserArray, UserCredentialsSpec, JwtAuthSpec } from "../models/joi-schemas";
 import { validationError } from "./logger";
 import { createToken } from "./jwt-utils";
-import { User } from "../types/models";
+import { User } from "../types/localspot-types";
 
 const requireAdmin = (request: Request) => {
   if (!request.auth?.credentials?.isAdmin) throw Boom.forbidden("Admin only");
