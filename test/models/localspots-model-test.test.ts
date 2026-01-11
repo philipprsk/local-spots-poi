@@ -3,8 +3,8 @@ import { EventEmitter } from "events";
 import { db } from "../../src/models/db";
 import { harbourCafe, testLocalSpots, maggie } from "../fixtures.test";
 import { assertSubset } from "../test-utils.test";
-import { User } from "../../src/types/models";
-import { Category } from "../../src/types/models";
+import { User } from "../../src/types/localspot-types";
+import { Category } from "../../src/types/localspot-types";
 
 EventEmitter.setMaxListeners(25);
 

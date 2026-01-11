@@ -2,8 +2,8 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 import { db } from "../models/db";
 import { LocalSpotSpec } from "../models/joi-schemas";
 import { imageStore } from "../models/image-store";
-import { User } from "../types/models";
-import { LocalSpot } from "../types/models";
+import { User } from "../types/localspot-types";
+import { LocalSpot } from "../types/localspot-types";
 
 
 export const localspotController = {

@@ -15,10 +15,16 @@ import { validate as jwtValidate } from "./api/jwt-utils";
 import { db } from "./models/db";
 import { validate as accountsValidate } from "./controllers/accounts-controller";
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load env vars
+dotenv.config({ path: path.join(__dirname, "../.env") });
+
+// Safety Check: Ensure the secret is loaded before starting
+if (!process.env.cookie_password) {
+  throw new Error("FATAL ERROR: process.env.cookie_password is not defined.");
+}
 
 async function init() {
   const server = Hapi.server({
@@ -33,10 +39,16 @@ async function init() {
         server: 60000,
         socket: 60000,
       },
+      cors: {
+        origin: ["http://localhost:5173"], 
+        credentials: true,
+        additionalHeaders: ["cache-control", "x-requested-with"]
+      }
     },
   });
 
   await server.register(Cookie);
+  await server.register(jwt);
   await server.register([
     Inert,
     Vision,
@@ -50,9 +62,6 @@ async function init() {
     },
   ]);
 
-
-  await server.register(jwt);
-
   server.views({
     engines: { hbs: Handlebars },
     relativeTo: __dirname,
@@ -63,23 +72,29 @@ async function init() {
     isCached: false,
   });
 
+  // Session Strategy (Cookie based)
   server.auth.strategy("session", "cookie", {
     cookie: {
-      name: process.env.COOKIE_NAME || "localspots-cookie",
-      password: process.env.COOKIE_PASSWORD || "secret-password-longer-than-32-chars",
+      name: process.env.cookie_name,
+      password: process.env.cookie_password, // matches .env
       isSecure: false,
     },
-    redirectTo: "/",
+    redirectTo: false,
     validate: accountsValidate,
   });
-  server.auth.default("session");
 
   server.validator(Joi);
 
+  // JWT Strategy (Token based)
   server.auth.strategy("jwt", "jwt", {
-    key: process.env.COOKIE_PASSWORD || "secret-password-longer-than-32-chars",
+    // FIX: Changed from COOKIE_PASSWORD to cookie_password to match env and utils
+    key: process.env.cookie_password, 
     validate: jwtValidate,
     verifyOptions: { algorithms: ["HS256"] }
+  });
+
+  server.auth.default({
+    strategies: ["session", "jwt"]
   });
 
   server.route({

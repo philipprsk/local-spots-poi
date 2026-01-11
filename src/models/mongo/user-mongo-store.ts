@@ -1,7 +1,7 @@
 import Mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { User } from "./user";
-import { User as UserType } from "../../types/models";
+import { User as UserType } from "../../types/localspot-types";
 
 export const userMongoStore = {
   async getAllUsers(): Promise<UserType[]> {
@@ -17,18 +17,22 @@ export const userMongoStore = {
 
   async addUser(userData: Partial<UserType>): Promise<UserType> {
     try {
-      const user = { ...userData };
-      if (user.password) {
-        user.password = await bcrypt.hash(user.password, 10);
+    // Check if user with this email already exists
+    if (userData.email) {
+      const existing = await User.findOne({ email: userData.email });
+      if (existing) {
+        throw new Error("User with this email already exists");
       }
-      const newUser = new User(user);
-      const userObj = await newUser.save();
-      return userObj.toObject();
-    } catch (error: any) {
-      console.error("Error adding user:", error.message);
-      throw error;
     }
-  },
+    const user = { ...userData };
+    const newUser = new User(user);
+    const userObj = await newUser.save();
+    return userObj.toObject();
+  } catch (error: any) {
+    console.error("Error adding user:", error.message);
+    throw error;
+  }
+},
 
   async getUserByEmail(email: string): Promise<UserType | null> {
     if (!email) return null;

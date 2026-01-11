@@ -1,6 +1,6 @@
 import Mongoose from "mongoose";
 import { Localspot } from "./localspot";
-import { LocalSpot as LocalSpotType } from "../../types/models";
+import { LocalSpot as LocalSpotType } from "../../types/localspot-types";
 
 export const localspotMongoStore = {
   async getAllLocalSpots(): Promise<LocalSpotType[]> {

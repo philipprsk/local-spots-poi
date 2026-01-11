@@ -4,8 +4,8 @@ import { localspotService } from "./localspot-service.test";
 import { assertSubset } from "../test-utils.test";
 import { maggie, harbourCafe, testLocalSpots, maggieCredentials } from "../fixtures.test";
 import { setupTestDatabase } from "./test-helpers.test";
-import { User } from "../../src/types/models";
-import { LocalSpot } from "../../src/types/models";
+import { User } from "../../src/types/localspot-types";
+import { LocalSpot } from "../../src/types/localspot-types";
 
 EventEmitter.setMaxListeners(25);
 

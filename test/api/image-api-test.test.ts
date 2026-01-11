@@ -3,8 +3,8 @@ import fs from "fs";
 import path from "path";
 import { localspotService } from "./localspot-service.test";
 import { maggie, maggieCredentials } from "../fixtures.test";
-import { User } from "../../src/types/models";
-import { LocalSpot } from "../../src/types/models";
+import { User } from "../../src/types/localspot-types";
+import { LocalSpot } from "../../src/types/localspot-types";
 
 describe("Image API tests", function() {
   this.timeout(15000); // globaler Timeout für diese Suite

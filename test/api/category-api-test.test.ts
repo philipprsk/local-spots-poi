@@ -2,7 +2,7 @@ import { assert } from "chai";
 import { localspotService } from "./localspot-service.test";
 import { assertSubset } from "../test-utils.test";
 import { adminUser, adminCredentials } from "../fixtures.test";
-import { Category } from "../../src/types/models";
+import { Category } from "../../src/types/localspot-types";
 
 const testCategory = {
   name: "Restaurant",

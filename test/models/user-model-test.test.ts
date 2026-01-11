@@ -3,7 +3,7 @@ import { db } from "../../src/models/db";
 import bcrypt from "bcrypt";
 import { maggie, testUsers } from "../fixtures.test";
 import { assertSubset } from "../test-utils.test";
-import { User } from "../../src/types/models";
+import { User } from "../../src/types/localspot-types";
 
 describe("User Model tests", () => {
   let users: User[] = [];
