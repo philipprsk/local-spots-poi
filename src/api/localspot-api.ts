@@ -11,15 +11,22 @@ export const localspotApi = {
     auth: { strategy: "jwt" },
     handler: async (request: Request, h: ResponseToolkit) => {
       try {
-        const localspots = await db.localspotStore.getAllLocalSpots();
+        // 1. Get the logged-in user from the JWT
+        const user = request.auth.credentials as User;
+        
+        // 2. Use the private method you mentioned earlier
+        // Make sure your db.localspotStore has this method exported
+        const localspots = await db.localspotStore.getUserLocalSpots(user._id);
+        
         return localspots;
       } catch (err) {
+        console.error("API Error:", err);
         return Boom.serverUnavailable("Database Error");
       }
     },
     tags: ["api"],
-    description: "Get all localspots",
-    notes: "Returns details of all localspots",
+    description: "Get only the logged-in user's localspots",
+    notes: "Returns details of localspots belonging to the authenticated user",
     response: { schema: LocalSpotArray, failAction: validationError },
   },
 
