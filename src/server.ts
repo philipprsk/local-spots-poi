@@ -15,6 +15,7 @@ import { validate as jwtValidate } from "./api/jwt-utils";
 import { db } from "./models/db";
 import { validate as accountsValidate } from "./controllers/accounts-controller";
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
