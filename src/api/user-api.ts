@@ -1,19 +1,18 @@
 import bcrypt from "bcrypt";
 import Boom from "@hapi/boom";
-import { Request, ResponseToolkit } from "@hapi/hapi";
+import { Request, ResponseToolkit, RouteOptions } from "@hapi/hapi";
 import { db } from "../models/db";
 import { UserSpec, UserSpecPlus, IdSpec, UserArray, UserCredentialsSpec, JwtAuthSpec } from "../models/joi-schemas";
 import { validationError } from "./logger";
 import { createToken } from "./jwt-utils";
 
-// FIX 1: Throw statt Return!
 const requireAdmin = (request: Request) => {
   if (!request.auth.credentials.isAdmin) {
-    throw Boom.forbidden("Admin only"); // Das unterbricht die Ausführung sofort
+    throw Boom.forbidden("Admin only");
   }
 };
 
-export const userApi = {
+export const userApi: { [key: string]: RouteOptions } = {
   authenticate: {
     auth: false,
     handler: async (request: Request, h: ResponseToolkit) => {
@@ -42,17 +41,14 @@ export const userApi = {
   },
 
   find: {
-    auth: { strategy: "jwt" },
+    auth: "jwt",
     handler: async (request: Request, h: ResponseToolkit) => {
       try {
         requireAdmin(request);
         const users = await db.userStore.getAllUsers();
         return users;
       } catch (err: any) {
-        // FIX 2: Wenn es schon ein Boom-Fehler ist (z.B. 403), wirf ihn weiter!
-        if (err.isBoom) {
-            throw err;
-        }
+        if (err.isBoom) throw err;
         console.error("Find users error:", err);
         return Boom.serverUnavailable("Database Error");
       }
@@ -64,7 +60,7 @@ export const userApi = {
   },
 
   findOne: {
-    auth: { strategy: "jwt" },
+    auth: "jwt",
     handler: async (request: Request, h: ResponseToolkit) => {
       try {
         requireAdmin(request);
@@ -74,7 +70,6 @@ export const userApi = {
         }
         return user;
       } catch (err: any) {
-        // FIX 2 auch hier
         if (err.isBoom) throw err;
         console.error("Find one user error:", err);
         return Boom.serverUnavailable("No User with this id");
@@ -88,7 +83,7 @@ export const userApi = {
   },
 
   create: {
-    auth: false,
+    auth: false, // WICHTIG: Kein extra "options" Objekt hier drin!
     handler: async (request: Request, h: ResponseToolkit) => {
       console.log(`--- API CALL: Create User for ${(request.payload as any).email} ---`);
       try {
@@ -96,9 +91,8 @@ export const userApi = {
         return h.response(user).code(201);
       } catch (err: any) {
         console.log(`--- DB ERROR: ${err.message} ---`);
-        // Wenn User schon existiert -> Conflict (409)
         if (err.message.includes("already exists") || err.code === 11000) {
-            return Boom.conflict("User with this email already exists");
+          return Boom.conflict("User with this email already exists");
         }
         return Boom.serverUnavailable("Database Error");
       }
@@ -111,14 +105,14 @@ export const userApi = {
   },
 
   deleteAll: {
-    auth: { strategy: "jwt" },
+    auth: "jwt",
     handler: async (request: Request, h: ResponseToolkit) => {
       try {
         requireAdmin(request);
         await db.userStore.deleteAll();
         return h.response().code(204);
       } catch (err: any) {
-        if (err.isBoom) throw err; // Wichtig für den 403 Test
+        if (err.isBoom) throw err;
         console.error("Delete all error:", err);
         return Boom.serverUnavailable("Database Error");
       }
@@ -129,12 +123,10 @@ export const userApi = {
   },
 
   deleteOne: {
-    auth: { strategy: "jwt" },
+    auth: "jwt",
     handler: async (request: Request, h: ResponseToolkit) => {
       try {
-        // Wir nutzen hier auch requireAdmin für Konsistenz
         requireAdmin(request);
-        
         const user = await db.userStore.getUserById(request.params.id);
         if (!user) {
           return Boom.notFound("No User with this id");
