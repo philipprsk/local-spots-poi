@@ -40,6 +40,86 @@ export const userApi: { [key: string]: RouteOptions } = {
     response: { schema: JwtAuthSpec, failAction: validationError },
   },
 
+  githubLogin: {
+    auth: "github-oauth",
+    handler: async function (request: Request, h: ResponseToolkit) {
+      if (!request.auth.isAuthenticated) {
+        return Boom.unauthorized("Authentication failed: " + request.auth.error.message);
+      }
+
+      // Type-Cast zu 'any', um den 'unknown' Fehler zu beheben
+      const credentials = request.auth.credentials as any;
+      const profile = credentials.profile;
+
+      // GitHub User haben manchmal keine öffentliche E-Mail
+      const email = profile.email || `${profile.username}@github.com`;
+
+      try {
+        // 1. User suchen oder neu anlegen
+        let user = await db.userStore.getUserByEmail(email);
+        if (!user) {
+          user = await db.userStore.addUser({
+            firstName: profile.displayName || profile.username || "GitHub",
+            lastName: "User",
+            email: email,
+            password: "", // Leeres Passwort für OAuth
+          });
+        }
+
+        // 2. JWT Token für deine App generieren
+        const token = createToken(user);
+
+        // 3. Weiterleitung ans Frontend
+        // Der Token wird als Query-Parameter angehängt
+        return h.redirect(`/#/home?token=${token}`);
+      } catch (err) {
+        console.error("GitHub OAuth Error:", err);
+        return Boom.serverUnavailable("Database Error during GitHub Login");
+      }
+    },
+    tags: ["api"],
+    description: "GitHub Login",
+    notes: "Authenticates user via GitHub and redirects to home with JWT",
+  },
+
+  googleLogin: {
+  auth: "google-oauth",
+  handler: async function (request: Request, h: ResponseToolkit) {
+    if (!request.auth.isAuthenticated) {
+      return Boom.unauthorized("Google authentication failed");
+    }
+
+    const credentials = request.auth.credentials as any;
+    const profile = credentials.profile;
+    
+    // Google liefert die E-Mail zuverlässiger als GitHub
+    const email = profile.email;
+
+    try {
+      let user = await db.userStore.getUserByEmail(email);
+      
+      if (!user) {
+        // Google Profile nutzt oft displayName oder splitte den Namen
+        user = await db.userStore.addUser({
+          firstName: profile.name?.first || profile.displayName?.split(" ")[0] || "Google",
+          lastName: profile.name?.last || profile.displayName?.split(" ")[1] || "User",
+          email: email,
+          password: "", // Wichtig: User-Model muss password optional haben!
+        });
+      }
+
+      const token = createToken(user);
+      // Zurück zum Frontend
+      return h.redirect(`/#/home?token=${token}`);
+    } catch (err) {
+      console.error(err);
+      return Boom.serverUnavailable("Database error during Google login");
+    }
+  },
+  tags: ["api"],
+  description: "Google Login",
+},
+
   find: {
     auth: "jwt",
     handler: async (request: Request, h: ResponseToolkit) => {

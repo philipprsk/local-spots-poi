@@ -25,7 +25,7 @@ export function connectMongo() {
   dotenv.config({ path: ".env" });
 
   Mongoose.set("strictQuery", true);
-  Mongoose.connect(process.env.db as string);
+  Mongoose.connect(process.env.DB as string);
   const db = Mongoose.connection;
 
   db.on("error", (err) => {

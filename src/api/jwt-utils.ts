@@ -10,12 +10,12 @@ dotenv.config();
 
 // 2. CHECK if the secret exists. If not, stop the app.
 // This fixes the TypeScript error because TS now knows it CANNOT be undefined below.
-if (!process.env.cookie_password) {
-  throw new Error("FATAL ERROR: cookie_password is not defined. Check your .env file!");
+if (!process.env.COOKIE_PASSWORD) {
+  throw new Error("FATAL ERROR: COOKIE_PASSWORD is not defined. Check your .env file!");
 }
 
 // 3. Now TS treats this as 'string', not 'string | undefined'
-const JWT_SECRET: string = process.env.cookie_password;
+const JWT_SECRET: string = process.env.COOKIE_PASSWORD;
 
 // ... rest of your code
 
