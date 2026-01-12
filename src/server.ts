@@ -3,6 +3,7 @@ import Vision from "@hapi/vision";
 import Inert from "@hapi/inert";
 import Cookie from "@hapi/cookie";
 import HapiSwagger from "hapi-swagger";
+import Bell from "@hapi/bell";
 import * as jwt from "hapi-auth-jwt2";
 import Handlebars from "handlebars";
 import path from "path";
@@ -16,15 +17,16 @@ import { db } from "./models/db.js";
 import { validate as accountsValidate } from "./controllers/accounts-controller.js";
 
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load env vars
-dotenv.config({ path: path.join(__dirname, "../.env") });
+dotenv.config();
 
 // Safety Check: Ensure the secret is loaded before starting
-if (!process.env.cookie_password) {
-  throw new Error("FATAL ERROR: process.env.cookie_password is not defined.");
+if (!process.env.COOKIE_PASSWORD) {
+  throw new Error("FATAL ERROR: process.env.COOKIE_PASSWORD is not defined.");
 }
 
 // Move server declaration outside of init
@@ -57,6 +59,8 @@ async function init() {
     },
   ]);
 
+  await server.register(Bell);
+
   server.views({
     engines: { hbs: Handlebars },
     relativeTo: __dirname,
@@ -69,8 +73,8 @@ async function init() {
 
   server.auth.strategy("session", "cookie", {
     cookie: {
-      name: process.env.cookie_name,
-      password: process.env.cookie_password,
+      name: process.env.COOKIE_NAME,
+      password: process.env.COOKIE_PASSWORD,
       isSecure: false,
     },
     redirectTo: false,
@@ -80,10 +84,31 @@ async function init() {
   server.validator(Joi);
 
   server.auth.strategy("jwt", "jwt", {
-    key: process.env.cookie_password, 
+    key: process.env.COOKIE_PASSWORD, 
     validate: jwtValidate,
     verifyOptions: { algorithms: ["HS256"] }
   });
+
+  
+  server.auth.strategy("github-oauth", "bell", {
+  provider: "github",
+  password: process.env.COOKIE_PASSWORD, // Verschlüsselung für das OAuth-Cookie
+  clientId: process.env.GITHUB_CLIENT_ID,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET,
+  isSecure: process.env.NODE_ENV === "production", // Nur in Produktion auf true setzen
+  location: process.env.URL || `http://localhost:${process.env.PORT || 3000}`
+});
+
+
+server.auth.strategy("google-oauth", "bell", {
+  provider: "google",
+  password: process.env.COOKIE_PASSWORD,
+  clientId: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  isSecure: process.env.NODE_ENV === "production",
+  location: process.env.URL || "http://localhost:3000"
+});
+
 
   server.auth.default({ strategies: ["session", "jwt"] });
 

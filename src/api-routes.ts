@@ -11,6 +11,8 @@ export const apiRoutes: ServerRoute[] = [
   { method: "get", path: "/api/users/{id}", options: userApi.findOne },
   { method: "delete", path: "/api/users/{id}", options: userApi.deleteOne },
   { method: "delete", path: "/api/users", options: userApi.deleteAll },
+  { method: ["get", "post"], path: "/auth/github", options: userApi.githubLogin },
+  { method: ["get", "post"], path: "/auth/google", options: userApi.googleLogin },
 
   // --- LOCALSPOTS ---
   { method: "post", path: "/api/localspots", options: localspotApi.create }, // Payload Config kommt jetzt aus dem Controller!
