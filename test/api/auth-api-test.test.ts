@@ -1,34 +1,51 @@
 import { assert } from "chai";
-import { decodeToken } from "../../src/api/jwt-utils";
-import { maggie, maggieCredentials } from "../fixtures.test";
 import { localspotService } from "./localspot-service.test";
-import { setupTestDatabase } from "./test-helpers.test";
+import { decodeToken } from "../../src/api/jwt-utils";
+import { cleanDatabase, getRandomUser } from "./test-helpers.test";
+import { suite, test, setup, teardown } from "mocha";
 
-describe("Authentication API tests", () => {
-  beforeEach(async () => {
-    await setupTestDatabase();
-    await localspotService.createUser(maggie);
+suite("Authentication API tests", () => {
+  let userInfo: any;
+
+  setup(async () => {
+    await cleanDatabase();
+    // 1. Frischen User generieren
+    userInfo = getRandomUser();
+    // 2. User in DB anlegen (damit Login klappen kann)
+    await localspotService.createUser(userInfo);
   });
 
-  it("authenticate", async () => {
-    const response = await localspotService.authenticate(maggieCredentials);
-    assert(response.success);
+  teardown(async () => {
+    // Auth Header nach jedem Test löschen
+    await localspotService.clearAuth();
+  });
+
+  test("authenticate", async () => {
+    // Login mit dem generierten User
+    const response = await localspotService.authenticate(userInfo);
+    assert.isTrue(response.success);
     assert.isDefined(response.token);
   });
 
-  it("verify Token", async () => {
-    const response = await localspotService.authenticate(maggieCredentials);
-    const userInfo = decodeToken(response.token);
-    assert.equal(userInfo.email, maggie.email);
+  test("verify Token", async () => {
+    const response = await localspotService.authenticate(userInfo);
+    // Token dekodieren und prüfen, ob die Email stimmt
+    // 'as any' verhindert den TypeScript Fehler beim Zugriff auf .email
+    const decoded = decodeToken(response.token) as any;
+    assert.equal(decoded.email, userInfo.email);
+    assert.equal(decoded.userId, response.userId); // Falls deine API userId zurückgibt
   });
 
-  it("check Unauthorized", async () => {
+  test("check Unauthorized", async () => {
+    // Sicherstellen, dass wir ausgeloggt sind
     await localspotService.clearAuth();
     try {
-      await localspotService.getAllUsers();
+      // Versuch, eine geschützte Route aufzurufen (z.B. deleteAllUsers)
+      await localspotService.deleteAllUsers();
       assert.fail("Route not protected");
     } catch (error: any) {
-      assert.equal(error.response.data.statusCode, 401);
+      // Wir erwarten 401 Unauthorized
+      assert.equal(error.response.status, 401);
     }
   });
 });

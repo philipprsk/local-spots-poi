@@ -1,96 +1,93 @@
 import { assert } from "chai";
 import { localspotService } from "./localspot-service.test";
 import { assertSubset } from "../test-utils.test";
-import { adminUser, adminCredentials } from "../fixtures.test";
-import { Category } from "../../src/types/localspot-types";
+import { cleanDatabase, getRandomUser } from "./test-helpers.test"; // getRandomUser importieren
+import { suite, test, setup, teardown } from "mocha";
 
 const testCategory = {
   name: "Restaurant",
   slug: "restaurant",
   icon: "🍽️",
   color: "#FF5733",
-  description: "Places to eat",
 };
 
-describe("Category API tests", () => {
+suite("Category API tests", () => {
   let testCounter = 0;
+  let adminData: any;
 
-  beforeEach(async () => {
+  setup(async () => {
     testCounter += 1;
-    try {
-      localspotService.clearAuth();
-      try {
-        await localspotService.createUser(adminUser);
-      } catch (err) {
-        // User might already exist
-      }
-      await localspotService.authenticate(adminCredentials);
-    } catch (error: any) {
-      console.error("Setup error:", error.message);
-      throw error;
-    }
+    await cleanDatabase();
+    
+    // 1. Admin erstellen (nutze getRandomUser!)
+    adminData = getRandomUser(true);
+    await localspotService.createUser(adminData);
+    
+    // 2. Einloggen
+    await localspotService.authenticate(adminData);
   });
 
-  afterEach(async () => {
-    localspotService.clearAuth();
+  teardown(async () => {
+    await localspotService.clearAuth();
   });
 
-  it("create a category", async () => {
-    const uniqueCategory = { ...testCategory, slug: `restaurant-${testCounter}` };
-    console.log("Test slug:", uniqueCategory.slug);
+  test("create a category", async () => {
+    // Slug einzigartig machen
+    const uniqueCategory = { ...testCategory, slug: `restaurant-${Date.now()}` };
     const newCategory = await localspotService.createCategory(uniqueCategory);
+    
     assertSubset(uniqueCategory, newCategory);
     assert.isDefined(newCategory._id);
   });
 
-  it("get all categories", async () => {
-    const cat1 = { ...testCategory, slug: `restaurant-${testCounter}-1` };
-    const cat2 = { ...testCategory, name: "Cafe", slug: `cafe-${testCounter}` };
+  test("get all categories", async () => {
+    const cat1 = { ...testCategory, slug: `cat1-${Date.now()}` };
+    const cat2 = { ...testCategory, name: "Cafe", slug: `cat2-${Date.now()}` };
     await localspotService.createCategory(cat1);
     await localspotService.createCategory(cat2);
+    
     const categories = await localspotService.getAllCategories();
     assert.isAtLeast(categories.length, 2);
   });
 
-  it("get category by id", async () => {
-    const uniqueCategory = { ...testCategory, slug: `restaurant-${testCounter}` };
+  test("get category by id", async () => {
+    const uniqueCategory = { ...testCategory, slug: `cat-id-${Date.now()}` };
     const created = await localspotService.createCategory(uniqueCategory);
     const retrieved = await localspotService.getCategory(created._id);
     assertSubset(uniqueCategory, retrieved);
   });
 
-  it("delete category", async () => {
-    const uniqueCategory = { ...testCategory, slug: `restaurant-${testCounter}` };
+  test("delete category", async () => {
+    const uniqueCategory = { ...testCategory, slug: `del-cat-${Date.now()}` };
     const created = await localspotService.createCategory(uniqueCategory);
+    
     const beforeDelete = await localspotService.getAllCategories();
     await localspotService.deleteCategory(created._id);
     const afterDelete = await localspotService.getAllCategories();
+    
     assert.equal(afterDelete.length, beforeDelete.length - 1);
   });
 
-  it("get category - not found", async () => {
+  test("get category - not found", async () => {
     try {
       await localspotService.getCategory("bad-id");
       assert.fail("Should fail");
     } catch (err: any) {
-      assert.include([400, 401, 404, 500, 503], err.response?.status);
+      assert.include([400, 404, 503], err.response?.status);
     }
   });
 
-  it("create category - duplicate slug", async () => {
-    const uniqueCategory = { ...testCategory, slug: `restaurant-${testCounter}` };
-    console.log("Creating first category with slug:", uniqueCategory.slug);
-    const first = await localspotService.createCategory(uniqueCategory);
-    console.log("First category created:", first._id);
+  test("create category - duplicate slug", async () => {
+    const slug = `duplicate-${Date.now()}`;
+    const uniqueCategory = { ...testCategory, slug: slug };
+    await localspotService.createCategory(uniqueCategory);
 
     try {
-      console.log("Attempting to create duplicate...");
       await localspotService.createCategory(uniqueCategory);
       assert.fail("Should fail on duplicate slug");
     } catch (err: any) {
-      console.log("Error caught:", err.response?.status, err.message);
-      const status = err.response?.status ?? err.status ?? err.statusCode;
-      assert.include([400, 401, 409, 500], status);
+      // 409 Conflict ist korrekt, 400 oder 500 manchmal auch je nach Server-Logik
+      assert.include([400, 409, 500], err.response?.status);
     }
   });
 });

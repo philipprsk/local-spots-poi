@@ -22,6 +22,11 @@ export const localspotMongoStore = {
     if (!id || !Mongoose.isValidObjectId(id)) return null;
     return Localspot.findById(id).populate("category").lean();
   },
+  async getLocalSpotsByUserId(id: string): Promise<LocalSpotType[]> {
+  if (!id) return [];
+  // Findet alle Spots, die diesem User gehören
+  return Localspot.find({ userid: id }).populate("category").lean();
+},
 
   async getUserLocalSpots(id: string): Promise<LocalSpotType[]> {
     return Localspot.find({ userid: id }).populate("category").lean();

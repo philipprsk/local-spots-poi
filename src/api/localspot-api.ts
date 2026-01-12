@@ -172,21 +172,23 @@ export const localspotApi = {
       const localspot = await db.localspotStore.getLocalSpot(id);
       if (!localspot) return Boom.notFound("No LocalSpot with this id");
 
+      // Lösche Cloudinary Bild
       if (localspot.imgPublicId) {
         await imageStore.deleteImage(localspot.imgPublicId);
       }
 
-      if (!localspot._id) {
-        return Boom.badImplementation("LocalSpot update failed");
-      }
-      const updated = await db.localspotStore.updateLocalSpot(typeof localspot._id === "string" ? localspot._id : "", {
+      // FIX: Sicherstellen, dass wir einen String haben
+      const localspotId = localspot._id ? localspot._id.toString() : "";
+
+      const updated = await db.localspotStore.updateLocalSpot(localspotId, {
         img: null,
         imgPublicId: null,
       });
+      
       if (!updated) {
         return Boom.badImplementation("LocalSpot update failed");
       }
-        return h.response(updated).code(200);
+      return h.response(updated).code(200);
     },
   },
 };

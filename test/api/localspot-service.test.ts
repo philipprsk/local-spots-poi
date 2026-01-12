@@ -1,26 +1,39 @@
+// test/api/localspot-service.test.ts
 import axios from "axios";
 import { serviceUrl } from "../fixtures.test";
-import { User } from "../../src/types/localspot-types";
-import { LocalSpot } from "../../src/types/localspot-types";
+import { User, LocalSpot } from "../../src/types/localspot-types";
 
 export const localspotService = {
   localspotURL: serviceUrl,
 
-  async authenticate(user: { email: string; password: string }) {
-    const response = await axios.post(`${this.localspotURL}/api/users/authenticate`, user);
+  async authenticate(user: any) {
+  // Add a safety check: if user is missing, don't try to access properties
+  if (!user) {
+    throw new Error("Authentication failed: No user data provided to service");
+  }
+  
+  const credentials = {
+    email: user.email,
+    password: user.password
+  };
+
+  const response = await axios.post(`${this.localspotURL}/api/users/authenticate`, credentials);
+  if (response.data.success && response.data.token) {
     axios.defaults.headers.common.Authorization = `Bearer ${response.data.token}`;
-    return response.data;
-  },
+  }
+  return response.data;
+},
 
   async clearAuth() {
     axios.defaults.headers.common.Authorization = "";
   },
 
+  // ... restliche Methoden bleiben gleich ...
   async createUser(user: User) {
     const res = await axios.post(`${this.localspotURL}/api/users`, user);
     return res.data;
   },
-
+  
   async getUser(id: string) {
     const res = await axios.get(`${this.localspotURL}/api/users/${id}`);
     return res.data;
@@ -61,9 +74,25 @@ export const localspotService = {
     return res.data;
   },
 
-  async createCategory(category: { name: string; description: string }) {
-    const res = await axios.post(`${this.localspotURL}/api/categories`, category);
-    return res.data;
+  // test/api/localspot-service.test.ts
+
+  async createCategory(category: any) {
+    const payload = {
+      name: category.name,
+      slug: category.slug,
+      icon: category.icon,
+      color: category.color,
+      // Hast du vielleicht 'isActive' im Schema, aber hier vergessen?
+    };
+    
+    try {
+      const res = await axios.post(`${this.localspotURL}/api/categories`, payload);
+      return res.data;
+    } catch (e: any) {
+      // DIESER LOG RETTET UNS:
+      console.log("CATEGORY ERROR DETAILS:", e.response?.data); 
+      throw e;
+    }
   },
 
   async getAllCategories() {
@@ -111,7 +140,5 @@ export const localspotService = {
   async deleteUser(id: string) {
     const response = await axios.delete(`${this.localspotURL}/api/users/${id}`);
     return response;
-  },
-
-
+  }
 };

@@ -11,39 +11,38 @@ const testCategory = {
 };
 
 EventEmitter.setMaxListeners(25);
-
-describe("Category Model tests", () => {
+suite("Category Model tests", () => {
   beforeEach(async () => {
     await db.categoryStore.deleteAll();
   });
 
-  it("create a category", async () => {
+  test("create a category", async () => {
     const newCategory = await db.categoryStore.addCategory(testCategory);
     assertSubset(testCategory, newCategory);
     assert.isDefined(newCategory._id);
   });
 
-  it("get all categories", async () => {
+  test("get all categories", async () => {
     await db.categoryStore.addCategory(testCategory);
     await db.categoryStore.addCategory({ ...testCategory, name: "Cafe", slug: "cafe" });
     const categories = await db.categoryStore.getAllCategories();
     assert.equal(categories.length, 2);
   });
 
-  it("get category by id", async () => {
+  test("get category by id", async () => {
     const created = await db.categoryStore.addCategory(testCategory);
     const retrieved = await db.categoryStore.getCategoryById(created._id);
     assertSubset(testCategory, retrieved);
   });
 
-  it("delete category", async () => {
+  test("delete category", async () => {
     const created = await db.categoryStore.addCategory(testCategory);
     await db.categoryStore.deleteCategoryById(created._id);
     const categories = await db.categoryStore.getAllCategories();
     assert.equal(categories.length, 0);
   });
 
-  it("delete all categories", async () => {
+  test("delete all categories", async () => {
     await db.categoryStore.addCategory(testCategory);
     await db.categoryStore.addCategory({ ...testCategory, name: "Cafe", slug: "cafe" });
     await db.categoryStore.deleteAll();
@@ -51,13 +50,13 @@ describe("Category Model tests", () => {
     assert.equal(categories.length, 0);
   });
 
-  it("get category by slug", async () => {
+  test("get category by slug", async () => {
     const created = await db.categoryStore.addCategory(testCategory);
     const retrieved = await db.categoryStore.getCategoryBySlug(testCategory.slug);
     assertSubset(testCategory, retrieved);
   });
 
-  it("update category", async () => {
+  test("update category", async () => {
     const created = await db.categoryStore.addCategory(testCategory);
     const updated = await db.categoryStore.updateCategory(created._id, {
       name: "Fine Dining",

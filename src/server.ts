@@ -26,32 +26,26 @@ if (!process.env.cookie_password) {
   throw new Error("FATAL ERROR: process.env.cookie_password is not defined.");
 }
 
-async function init() {
-  const server = Hapi.server({
-    port: process.env.PORT || 3000,
-    host: "0.0.0.0",
-    routes: {
-      payload: {
-        maxBytes: 10 * 1024 * 1024,
-        multipart: true,
-      },
-      timeout: {
-        server: 60000,
-        socket: 60000,
-      },
-      cors: {
-        origin: ["http://localhost:5173"], 
-        credentials: true,
-        additionalHeaders: ["cache-control", "x-requested-with"]
-      }
-    },
-  });
+// Move server declaration outside of init
+export const server = Hapi.server({
+  port: process.env.PORT || 3000,
+  host: "0.0.0.0",
+  routes: {
+    payload: { maxBytes: 10 * 1024 * 1024, multipart: true },
+    timeout: { server: 60000, socket: 60000 },
+    cors: {
+      origin: ["http://localhost:5173"], 
+      credentials: true,
+      additionalHeaders: ["cache-control", "x-requested-with"]
+    }
+  },
+});
 
+async function init() {
   await server.register(Cookie);
   await server.register(jwt);
   await server.register([
-    Inert,
-    Vision,
+    Inert, Vision,
     {
       plugin: HapiSwagger,
       options: {
@@ -72,11 +66,10 @@ async function init() {
     isCached: false,
   });
 
-  // Session Strategy (Cookie based)
   server.auth.strategy("session", "cookie", {
     cookie: {
       name: process.env.cookie_name,
-      password: process.env.cookie_password, // matches .env
+      password: process.env.cookie_password,
       isSecure: false,
     },
     redirectTo: false,
@@ -85,41 +78,39 @@ async function init() {
 
   server.validator(Joi);
 
-  // JWT Strategy (Token based)
   server.auth.strategy("jwt", "jwt", {
-    // FIX: Changed from COOKIE_PASSWORD to cookie_password to match env and utils
     key: process.env.cookie_password, 
     validate: jwtValidate,
     verifyOptions: { algorithms: ["HS256"] }
   });
 
-  server.auth.default({
-    strategies: ["session", "jwt"]
-  });
+  server.auth.default({ strategies: ["session", "jwt"] });
 
   server.route({
     method: "GET",
     path: "/public/{param*}",
-    handler: {
-      directory: {
-        path: path.join(__dirname, "../public"),
-        redirectToSlash: true,
-        index: true,
-      },
-    },
+    handler: { directory: { path: path.join(__dirname, "../public"), redirectToSlash: true, index: true } },
     options: { auth: false }
   });
 
   server.route(webRoutes);
   server.route(apiRoutes);
 
-  await server.start();
-  console.log("Server running on %s", server.info.uri);
+  // Initialize the server (prepares it but doesn't open the port yet)
+  await server.initialize();
+
+  // ONLY start the server if this file is run directly (not by Mocha)
+  if (import.meta.url === `file://${process.argv[1]}`) {
+    await server.start();
+    console.log("Server running on %s", server.info.uri);
+  }
 }
 
+// Global Rejection Handler
 process.on("unhandledRejection", (err) => {
   console.log(err);
   process.exit(1);
 });
 
+// Run the setup
 init();

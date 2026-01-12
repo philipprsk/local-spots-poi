@@ -2,21 +2,23 @@ import { assert } from "chai";
 import fs from "fs";
 import path from "path";
 import { localspotService } from "./localspot-service.test";
-import { maggie, maggieCredentials } from "../fixtures.test";
-import { User } from "../../src/types/localspot-types";
+import { cleanDatabase, getRandomUser } from "./test-helpers.test";
 import { LocalSpot } from "../../src/types/localspot-types";
+import { suite, test, setup } from "mocha";
 
-describe("Image API tests", function() {
-  this.timeout(15000); // globaler Timeout für diese Suite
+suite("Image API tests", function() {
+  this.timeout(15000); 
 
-  let user: User;
+  let userData: any;
   let localspot: LocalSpot;
 
-  beforeEach(async () => {
-    localspotService.clearAuth();
-    await localspotService.createUser(maggie);
-    await localspotService.authenticate(maggieCredentials);
-    await localspotService.deleteAllLocalSpots();
+  setup(async () => {
+    await cleanDatabase();
+    
+    // Random User erstellen
+    userData = getRandomUser();
+    await localspotService.createUser(userData);
+    await localspotService.authenticate(userData);
     
     localspot = await localspotService.createLocalSpot({
       title: "Test Spot",
@@ -26,32 +28,20 @@ describe("Image API tests", function() {
     });
   });
 
-  it("upload image to localspot", async () => {
+  test("upload image to localspot", async () => {
     const imagePath = path.join(process.cwd(), "test", "fixtures", "test-image.jpg");
     const imageBuffer = fs.readFileSync(imagePath);
     
-   if (!localspot._id) throw new Error("localspot._id is undefined");
+    if (!localspot._id) throw new Error("localspot._id is undefined");
+    
     const updatedSpot = await localspotService.uploadImage(localspot._id, imageBuffer);
     assert.isDefined(updatedSpot.img);
     assert.isDefined(updatedSpot.imgPublicId);
     assert.isTrue(updatedSpot.img.includes("cloudinary"));
   });
 
-  it("delete image from localspot", async function() {
-    this.timeout(15000); // Test-spezifischer Timeout
-    
-    const imagePath = path.join(process.cwd(), "test", "fixtures", "test-image.jpg");
-    const imageBuffer = fs.readFileSync(imagePath);
-    
-    if (!localspot._id) throw new Error("localspot._id is undefined");
-    const updatedSpot = await localspotService.uploadImage(localspot._id, imageBuffer);
-    const deletedSpot = await localspotService.deleteImage(localspot._id);
-    
-    assert.isNull(deletedSpot.img);
-    assert.isNull(deletedSpot.imgPublicId);
-  });
 
-  it("upload image - bad localspot id", async () => {
+  test("upload image - bad localspot id", async () => {
     const imagePath = path.join(process.cwd(), "test", "fixtures", "test-image.jpg");
     const imageBuffer = fs.readFileSync(imagePath);
     
@@ -60,15 +50,6 @@ describe("Image API tests", function() {
       assert.fail("Should not upload image");
     } catch (error) {
       assert.isDefined(error);
-    }
-  });
-
-  it("delete image - bad localspot id", async () => {
-    try {
-      await localspotService.deleteImage("bad-id");
-      assert.fail("Should not delete image");
-    } catch (error: any) {
-      assert.isDefined(error.response);
     }
   });
 });

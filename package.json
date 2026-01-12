@@ -10,7 +10,9 @@
     "extension": [
       "ts"
     ],
-    "spec": "test/**/*.ts"
+    "spec": "test/**/*.ts",
+    "loader": "tsx",
+    "ui": "tdd"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && mkdir -p dist/views dist/public && cp -R src/views/* dist/views/ && cp -R public/* dist/public/",
