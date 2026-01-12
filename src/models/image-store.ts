@@ -5,15 +5,15 @@ import streamifier from "streamifier";
 dotenv.config();
 
 cloudinary.v2.config({
-  cloud_name: process.env.cloudinary_name,
-  api_key: process.env.cloudinary_key,
-  api_secret: process.env.cloudinary_secret,
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
 });
 
 console.log("Cloudinary configured:", {
-  cloud_name: process.env.cloudinary_name ? "✓" : "MISSING",
-  api_key: process.env.cloudinary_key ? "✓" : "MISSING",
-  api_secret: process.env.cloudinary_secret ? "✓" : "MISSING",
+  cloud_name: process.env.CLOUDINARY_NAME ? "✓" : "MISSING",
+  api_key: process.env.CLOUDINARY_KEY ? "✓" : "MISSING",
+  api_secret: process.env.CLOUDINARY_SECRET ? "✓" : "MISSING",
 });
 
 export const imageStore = {

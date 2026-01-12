@@ -6,16 +6,18 @@
   "type": "module",
   "author": "",
   "main": "dist/server.js",
- "mocha": {
-  "extension": ["ts"],
-  "spec": "test/**/*.ts",
-  "node-option": [
-    "import=tsx" 
-  ],
-  "ui": "tdd"
-},
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "spec": "test/**/*.ts",
+    "node-option": [
+      "import=tsx"
+    ],
+    "ui": "tdd"
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json && mkdir -p dist/views dist/public && cp -R src/views/* dist/views/ && cp -R public/* dist/public/ || true",
+    "build": "tsc && cp -r src/views dist/ && cp -r src/public dist/",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint . --ext .ts",
@@ -26,14 +28,14 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/chai": "^5.2.3",
-    "@types/hapi__bell": "^11.0.7",
+    "@types/hapi__bell": "^13.0.2",
     "@types/hapi__cookie": "^12.0.5",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^25.0.3",
+    "@types/node": "^25.0.6",
     "@types/streamifier": "^0.1.2",
-    "@typescript-eslint/eslint-plugin": "^8.52.0",
-    "@typescript-eslint/parser": "^8.52.0",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
     "axios": "^1.13.2",
     "chai": "^6.2.2",
     "eslint": "^9.39.2",
@@ -65,7 +67,7 @@
     "jsonwebtoken": "^9.0.3",
     "lowdb": "^7.0.1",
     "mais-mongoose-seeder": "^1.0.7",
-    "mongoose": "^9.1.2",
+    "mongoose": "^9.1.3",
     "streamifier": "^0.1.1",
     "uuid": "^13.0.0"
   }
