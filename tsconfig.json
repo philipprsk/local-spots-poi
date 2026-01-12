@@ -6,7 +6,7 @@
     "lib": ["es2022"],
     "module": "es2022",
     "target": "es2022",
-    "rootDir": ".",
+    "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
@@ -14,5 +14,10 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
-  }
+  },
+  "include": [
+    "src/**/*" 
+  ],
+  "exclude": ["test/**/*", "node_modules"]
 }
+

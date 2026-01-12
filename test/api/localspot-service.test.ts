@@ -1,7 +1,7 @@
 // test/api/localspot-service.test.ts
 import axios from "axios";
-import { serviceUrl } from "../fixtures.test";
-import { User, LocalSpot } from "../../src/types/localspot-types";
+import { serviceUrl } from "../fixtures.test.js";
+import { User, LocalSpot } from "../../src/types/localspot-types.js";
 
 export const localspotService = {
   localspotURL: serviceUrl,

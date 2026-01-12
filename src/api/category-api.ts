@@ -1,9 +1,9 @@
 import Boom from "@hapi/boom";
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { db } from "../models/db";
-import { CategorySpec, CategorySpecPlus, CategoryArray } from "../models/joi-schemas";
-import { validationError } from "./logger";
-import { Category } from "../types/localspot-types";
+import { db } from "../models/db.js";
+import { CategorySpec, CategorySpecPlus, CategoryArray } from "../models/joi-schemas.js";
+import { validationError } from "./logger.js";
+import { Category } from "../types/localspot-types.js";
 
 const requireAdmin = (request: Request) => {
   if (!request.auth?.credentials?.isAdmin) throw Boom.forbidden("Admin only");

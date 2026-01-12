@@ -1,6 +1,6 @@
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { db } from "../models/db";
-import { User } from "../types/localspot-types";
+import { db } from "../models/db.js";
+import { User } from "../types/localspot-types.js";
 
 export const adminController = {
   index: {

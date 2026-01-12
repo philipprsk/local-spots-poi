@@ -1,4 +1,4 @@
-import { LocalSpot } from "../src/types/localspot-types";
+import { LocalSpot } from "../src/types/localspot-types.js";
 
 
 export const serviceUrl = "http://localhost:3000";

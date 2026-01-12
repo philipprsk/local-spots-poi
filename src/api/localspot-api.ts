@@ -1,10 +1,10 @@
 import Boom from "@hapi/boom";
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { db } from "../models/db";
-import { IdSpec, LocalSpotSpec, LocalSpotSpecPlus, LocalSpotArray } from "../models/joi-schemas";
-import { validationError } from "./logger";
-import { imageStore } from "../models/image-store";
-import { User, LocalSpot } from "../types/localspot-types";
+import { db } from "../models/db.js";
+import { IdSpec, LocalSpotSpec, LocalSpotSpecPlus, LocalSpotArray } from "../models/joi-schemas.js";
+import { validationError } from "./logger.js";
+import { imageStore } from "../models/image-store.js";
+import { User, LocalSpot } from "../types/localspot-types.js";
 
 export const localspotApi = {
   find: {

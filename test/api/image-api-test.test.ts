@@ -1,9 +1,9 @@
 import { assert } from "chai";
 import fs from "fs";
 import path from "path";
-import { localspotService } from "./localspot-service.test";
-import { cleanDatabase, getRandomUser } from "./test-helpers.test";
-import { LocalSpot } from "../../src/types/localspot-types";
+import { localspotService } from "./localspot-service.test.js";
+import { cleanDatabase, getRandomUser } from "./test-helpers.test.js";
+import { LocalSpot } from "../../src/types/localspot-types.js";
 import { suite, test, setup } from "mocha";
 
 suite("Image API tests", function() {

@@ -1,6 +1,6 @@
-import { userApi } from "./api/user-api";
-import { localspotApi } from "./api/localspot-api";
-import { categoryApi } from "./api/category-api";
+import { userApi } from "./api/user-api.js";
+import { localspotApi } from "./api/localspot-api.js";
+import { categoryApi } from "./api/category-api.js";
 import { ServerRoute } from "@hapi/hapi";
 
 export const apiRoutes: ServerRoute[] = [

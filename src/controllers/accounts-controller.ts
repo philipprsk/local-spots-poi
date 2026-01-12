@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import { Request, ResponseToolkit } from "@hapi/hapi";
-import { db } from "../models/db";
-import { UserSpec, UserCredentialsSpec } from "../models/joi-schemas";
-import { User } from "../types/localspot-types";
+import { db } from "../models/db.js";
+import { UserSpec, UserCredentialsSpec } from "../models/joi-schemas.js";
+import { User } from "../types/localspot-types.js";
 
 export const accountsController = {
   index: {

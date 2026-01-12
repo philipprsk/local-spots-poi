@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import Boom from "@hapi/boom";
 import { Request, ResponseToolkit, RouteOptions } from "@hapi/hapi";
-import { db } from "../models/db";
-import { UserSpec, UserSpecPlus, IdSpec, UserArray, UserCredentialsSpec, JwtAuthSpec } from "../models/joi-schemas";
-import { validationError } from "./logger";
-import { createToken } from "./jwt-utils";
+import { db } from "../models/db.js";
+import { UserSpec, UserSpecPlus, IdSpec, UserArray, UserCredentialsSpec, JwtAuthSpec } from "../models/joi-schemas.js";
+import { validationError } from "./logger.js";
+import { createToken } from "./jwt-utils.js";
 
 const requireAdmin = (request: Request) => {
   if (!request.auth.credentials.isAdmin) {

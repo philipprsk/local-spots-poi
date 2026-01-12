@@ -6,17 +6,17 @@
   "type": "module",
   "author": "",
   "main": "dist/server.js",
-  "mocha": {
-    "extension": [
-      "ts"
-    ],
-    "spec": "test/**/*.ts",
-    "loader": "tsx",
-    "ui": "tdd"
-  },
+ "mocha": {
+  "extension": ["ts"],
+  "spec": "test/**/*.ts",
+  "node-option": [
+    "import=tsx" 
+  ],
+  "ui": "tdd"
+},
   "scripts": {
-    "build": "tsc -p tsconfig.json && mkdir -p dist/views dist/public && cp -R src/views/* dist/views/ && cp -R public/* dist/public/",
-    "start": "npm run build && node dist/server.js",
+    "build": "tsc -p tsconfig.json && mkdir -p dist/views dist/public && cp -R src/views/* dist/views/ && cp -R public/* dist/public/ || true",
+    "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint . --ext .ts",
     "test": "tsx --test \"test/**/*.ts\"",

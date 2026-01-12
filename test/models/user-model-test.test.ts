@@ -1,9 +1,9 @@
 import { assert } from "chai";
 import bcrypt from "bcrypt";
-import { maggie, testUsers } from "../fixtures.test";
-import { User } from "../../src/types/localspot-types";
+import { maggie, testUsers } from "../fixtures.test.js";
+import { User } from "../../src/types/localspot-types.js";
 import { suite, test, setup } from "mocha"; // Explicit TDD imports
-import { db } from "../../src/models/db";
+import { db } from "../../src/models/db.js";
 
 suite("User Model tests", () => {
   let users: User[] = [];

@@ -1,7 +1,7 @@
 import { assert } from "chai";
-import { localspotService } from "./localspot-service.test";
-import { assertSubset } from "../test-utils.test";
-import { cleanDatabase, getRandomUser } from "./test-helpers.test"; // getRandomUser importieren
+import { localspotService } from "./localspot-service.test.js";
+import { assertSubset } from "../test-utils.test.js";
+import { cleanDatabase, getRandomUser } from "./test-helpers.test.js"; // getRandomUser importieren
 import { suite, test, setup, teardown } from "mocha";
 
 const testCategory = {

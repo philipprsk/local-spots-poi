@@ -1,7 +1,7 @@
 import Mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { User } from "./user";
-import { User as UserType } from "../../types/localspot-types";
+import { User } from "./user.js";
+import { User as UserType } from "../../types/localspot-types.js";
 
 export const userMongoStore = {
   async getAllUsers(): Promise<UserType[]> {

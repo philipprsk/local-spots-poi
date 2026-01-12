@@ -1,8 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request } from "@hapi/hapi";
 import dotenv from "dotenv";
-import { db } from "../models/db";
-import { User } from "../types/localspot-types";
+import { db } from "../models/db.js";
+import { User } from "../types/localspot-types.js";
 ;
 
 // 1. Load env vars immediately

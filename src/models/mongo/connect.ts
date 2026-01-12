@@ -1,10 +1,10 @@
 import * as dotenv from "dotenv";
 import Mongoose from "mongoose";
 import * as mongooseSeeder from "mais-mongoose-seeder";
-import { seedData } from "./seed-data";
-import { categoryMongoStore } from "./category-mongo-store";
-import { userMongoStore } from "./user-mongo-store";
-import { localspotMongoStore } from "./localspot-mongo-store";
+import { seedData } from "./seed-data.js";
+import { categoryMongoStore } from "./category-mongo-store.js";
+import { userMongoStore } from "./user-mongo-store.js";
+import { localspotMongoStore } from "./localspot-mongo-store.js";
 
 async function seed(mongoose: typeof Mongoose) {
   try {

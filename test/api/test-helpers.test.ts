@@ -1,6 +1,6 @@
 // test/api/test-helpers.test.ts
-import { db } from "../../src/models/db";
-import { User } from "../../src/models/mongo/user"; // Importiere das Mongoose Model direkt
+import { db } from "../../src/models/db.js";
+import { User } from "../../src/models/mongo/user.js"; // Importiere das Mongoose Model direkt
 
 export async function cleanDatabase() {
   console.log("--- Absolute Clean Start ---");

@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { EventEmitter } from "events";
-import { db } from "../../src/models/db";
-import { assertSubset } from "../test-utils.test";
+import { db } from "../../src/models/db.js";
+import { assertSubset } from "../test-utils.test.js";
 
 const testCategory = {
   name: "Restaurant",

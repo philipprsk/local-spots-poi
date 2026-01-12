@@ -1,7 +1,7 @@
 import { assert } from "chai";
-import { localspotService } from "./localspot-service.test";
-import { cleanDatabase, getRandomUser } from "./test-helpers.test";
-import { User } from "../../src/types/localspot-types";
+import { localspotService } from "./localspot-service.test.js";
+import { cleanDatabase, getRandomUser } from "./test-helpers.test.js";
+import { User } from "../../src/types/localspot-types.js";
 import { suite, test, setup, teardown } from "mocha";
 
 suite("Admin API tests", () => {

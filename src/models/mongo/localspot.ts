@@ -1,5 +1,5 @@
 import Mongoose from "mongoose";
-import { LocalSpot as LocalSpotType } from "../../types/localspot-types";
+import { LocalSpot as LocalSpotType } from "../../types/localspot-types.js";
 const { Schema } = Mongoose;
 
 

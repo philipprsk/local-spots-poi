@@ -1,7 +1,7 @@
 import { assert } from "chai";
-import { localspotService } from "./localspot-service.test";
-import { decodeToken } from "../../src/api/jwt-utils";
-import { cleanDatabase, getRandomUser } from "./test-helpers.test";
+import { localspotService } from "./localspot-service.test.js";
+import { decodeToken } from "../../src/api/jwt-utils.js";
+import { cleanDatabase, getRandomUser } from "./test-helpers.test.js";
 import { suite, test, setup, teardown } from "mocha";
 
 suite("Authentication API tests", () => {

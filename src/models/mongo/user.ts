@@ -1,5 +1,5 @@
 import Mongoose from "mongoose";
-import { User as UserType } from "../../types/localspot-types";
+import { User as UserType } from "../../types/localspot-types.js";
 import bcrypt from "bcrypt";
 
 const { Schema } = Mongoose;

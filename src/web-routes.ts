@@ -1,8 +1,8 @@
-import { accountsController } from "./controllers/accounts-controller";
-import { dashboardController } from "./controllers/dashboard-controller";
-import { aboutController } from "./controllers/about-controller";
-import { localspotController } from "./controllers/localspot-controller";
-import { adminController } from "./controllers/admin-controller";
+import { accountsController } from "./controllers/accounts-controller.js";
+import { dashboardController } from "./controllers/dashboard-controller.js";
+import { aboutController } from "./controllers/about-controller.js";
+import { localspotController } from "./controllers/localspot-controller.js";
+import { adminController } from "./controllers/admin-controller.js";
 import { ServerRoute } from "@hapi/hapi";
 
 // Optional: Interface importieren, falls verwendet

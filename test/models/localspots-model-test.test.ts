@@ -1,8 +1,8 @@
 import { assert } from "chai";
-import { db } from "../../src/models/db";
-import { testLocalSpots, harbourCafe, maggie, testCategory } from "../fixtures.test"; // testCategory importieren!
-import { assertSubset } from "../test-utils.test";
-import { User, Category } from "../../src/types/localspot-types";
+import { db } from "../../src/models/db.js";
+import { testLocalSpots, harbourCafe, maggie, testCategory } from "../fixtures.test.js"; // testCategory importieren!
+import { assertSubset } from "../test-utils.test.js";
+import { User, Category } from "../../src/types/localspot-types.js";
 import { suite, test, setup } from "mocha";
 
 suite("LocalSpots Model tests", () => {

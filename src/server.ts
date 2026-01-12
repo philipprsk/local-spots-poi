@@ -9,11 +9,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import Joi from "joi";
-import { apiRoutes } from "./api-routes";
-import { webRoutes } from "./web-routes";
-import { validate as jwtValidate } from "./api/jwt-utils";
-import { db } from "./models/db";
-import { validate as accountsValidate } from "./controllers/accounts-controller";
+import { apiRoutes } from "./api-routes.js";
+import { webRoutes } from "./web-routes.js";
+import { validate as jwtValidate } from "./api/jwt-utils.js";
+import { db } from "./models/db.js";
+import { validate as accountsValidate } from "./controllers/accounts-controller.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,7 +29,7 @@ if (!process.env.cookie_password) {
 
 // Move server declaration outside of init
 export const server = Hapi.server({
-  port: process.env.PORT || 3000,
+  port: process.env.port || 3000,
   host: "0.0.0.0",
   routes: {
     payload: { maxBytes: 10 * 1024 * 1024, multipart: true },
