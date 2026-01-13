@@ -1,7 +1,7 @@
 {
   "name": "local-spots-poi",
-  "version": "2.1.0",
-  "description": "First Typescript version of Local Spots POI",
+  "version": "3.0.0",
+  "description": "Local Spots POI",
   "license": "ISC",
   "type": "module",
   "author": "",
