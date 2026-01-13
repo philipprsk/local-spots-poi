@@ -17,7 +17,7 @@
     "ui": "tdd"
   },
   "scripts": {
-    "build": "rimraf dist && tsc && cp -r src/views dist/",
+    "build": "rm -rf dist && tsc && cp -r src/views dist/",
     "start": "node dist/server.js",
     "dev": "nodemon src/server.js",
     "lint": "eslint . --ext .ts",
@@ -29,6 +29,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/chai": "^5.2.3",
     "@types/hapi__bell": "^13.0.2",
+    "@types/hapi__boom": "^7.4.1",
     "@types/hapi__cookie": "^12.0.5",
     "@types/hapi__hapi": "^20.0.13",
     "@types/hapi__inert": "^5.2.10",
