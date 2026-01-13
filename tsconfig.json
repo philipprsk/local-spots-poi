@@ -11,6 +11,8 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true, // Überspringt die Prüfung der d.ts Dateien in node_modules
+    "skipDefaultLibCheck": true,
+    "noLib": false,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "types": [] // <--- WICHTIG: Setze dies auf ein leeres Array!
