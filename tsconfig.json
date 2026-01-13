@@ -2,20 +2,18 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Node 20",
   "compilerOptions": {
-    "target": "es2022",
-    "module": "esnext",
-    "lib": ["es2022", "esnext"],
-    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ESNext"],
     "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true, // Überspringt die Prüfung der d.ts Dateien in node_modules
-    "skipDefaultLibCheck": true,
-    "noLib": false,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "types": [] // <--- WICHTIG: Setze dies auf ein leeres Array!
+    "types": ["node"] 
   },
   "include": ["src/**/*"],
   "exclude": ["test/**/*", "node_modules"]

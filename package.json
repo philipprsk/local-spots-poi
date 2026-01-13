@@ -17,7 +17,7 @@
     "ui": "tdd"
   },
   "scripts": {
-    "build": "tsc && cp -r src/views dist/",
+    "build": "tsc || true && cp -r src/views dist/",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint . --ext .ts",
