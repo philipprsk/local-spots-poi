@@ -72,7 +72,7 @@ export const userApi: { [key: string]: RouteOptions } = {
 
         // 3. Weiterleitung ans Frontend
         // Der Token wird als Query-Parameter angehängt
-        return h.redirect(`/#/home?token=${token}`);
+        return h.redirect(`https://local-spot-poi.netlify.app/dashboard?token=${token}`);
       } catch (err) {
         console.error("GitHub OAuth Error:", err);
         return Boom.serverUnavailable("Database Error during GitHub Login");
@@ -111,7 +111,7 @@ export const userApi: { [key: string]: RouteOptions } = {
 
       const token = createToken(user);
       // Zurück zum Frontend
-      return h.redirect(`/#/home?token=${token}`);
+      return h.redirect(`https://local-spot-poi.netlify.app/dashboard?token=${token}`);
     } catch (err) {
       console.error(err);
       return Boom.serverUnavailable("Database error during Google login");

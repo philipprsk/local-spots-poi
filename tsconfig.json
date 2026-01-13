@@ -1,20 +1,26 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Node 20",
   "compilerOptions": {
+    /* Grundlegendes */
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": ["ESNext"],
-    "rootDir": "src",
-    "outDir": "dist",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
+    
+    /* Pfade - Das löst dein dist-Problem */
+    "outDir": "dist",            // Hier landet das fertige JavaScript
+    "rootDir": "src",            // Hier sucht der Compiler deinen Code
+    "baseUrl": ".",
+    
+    /* Strenge & Qualität */
+    "strict": true,              // Sorgt für sauberen Code
+    "skipLibCheck": true,        // Beschleunigt den Build und ignoriert Fehler in node_modules
     "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
-    "types": ["node"] 
+    "esModuleInterop": true,     // Wichtig für Kompatibilität mit bcrypt/hapi
+    
+    /* Fix für den "Scheiß dist" Fehler */
+    "noEmitOnError": true,       // Ein Build wird NUR erstellt, wenn alles fehlerfrei ist (Kein Rumgeeire!)
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["test/**/*", "node_modules"]
+  "include": ["src/**/*"],       // Nur Dateien in src/ werden beachtet
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }
