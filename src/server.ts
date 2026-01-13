@@ -112,7 +112,7 @@ server.auth.strategy("google-oauth", "bell", {
   clientId: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   isSecure: process.env.NODE_ENV === "production",
-  location: process.env.URL || "http://localhost:3000"
+  location: process.env.URL || `http://localhost:${process.env.PORT || 3000}`
 });
 
 
