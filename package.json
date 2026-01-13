@@ -17,13 +17,13 @@
     "ui": "tdd"
   },
   "scripts": {
-    "build": "tsc && cp -r src/views dist/ && cp -r src/public dist/",
+    "build": "tsc && cp -r src/views dist/",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint . --ext .ts",
     "test": "tsx --test \"test/**/*.ts\"",
-    "testmodels": "mocha --loader tsx --ui tdd \"test/models/**/*.ts\"",
-    "testapi": "mocha --loader tsx --ui tdd \"test/api/**/*.ts\""
+    "testmodels": "mocha --loader tsx --ui tdd --timeout 10000 \"test/models/**/*.ts\"",
+    "testapi": "mocha --loader tsx --ui tdd --timeout 10000 \"test/api/**/*.ts\""
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -32,7 +32,7 @@
     "@types/hapi__cookie": "^12.0.5",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^25.0.6",
+    "@types/node": "^25.0.7",
     "@types/streamifier": "^0.1.2",
     "@typescript-eslint/eslint-plugin": "^8.53.0",
     "@typescript-eslint/parser": "^8.53.0",

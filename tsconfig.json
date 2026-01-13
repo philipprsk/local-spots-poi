@@ -1,10 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Node 20",
-
   "compilerOptions": {
-    "lib": ["es2022"],
-    "module": "es2022",
+    "lib": ["es2022", "esnext"],
+    "module": "esnext",
     "target": "es2022",
     "rootDir": "src",
     "outDir": "dist",
@@ -12,12 +11,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
+    "moduleResolution": "node", 
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"] 
   },
-  "include": [
-    "src/**/*" 
-  ],
+  "include": ["src/**/*"],
   "exclude": ["test/**/*", "node_modules"]
 }
-
