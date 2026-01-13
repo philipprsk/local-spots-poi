@@ -1,4 +1,6 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Hapi Backend",
   "compilerOptions": {
     "target": "ESNext",
     "module": "NodeNext",
@@ -11,7 +13,8 @@
     "noEmitOnError": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "types": ["node"] 
+    /* Hier weisen wir TS explizit an, Node und Hapi Typen zu laden */
+    "types": ["node", "@types/hapi__hapi", "@types/hapi__bell", "@types/hapi__cookie"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
