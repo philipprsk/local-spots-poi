@@ -1,3 +1,8 @@
+// @ts-ignore
+/// <reference types="@hapi/bell" />
+// @ts-ignore
+/// <reference types="@hapi/cookie" />
+
 import Hapi from "@hapi/hapi";
 import Vision from "@hapi/vision";
 import Inert from "@hapi/inert";
@@ -15,7 +20,7 @@ import { webRoutes } from "./web-routes.js";
 import { validate as jwtValidate } from "./api/jwt-utils.js";
 import { db } from "./models/db.js";
 import { validate as accountsValidate } from "./controllers/accounts-controller.js";
-/// <reference types="@types/hapi__bell" />
+
 
 
 
