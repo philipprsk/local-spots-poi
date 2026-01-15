@@ -10,18 +10,16 @@ suite("LocalSpots Model tests", () => {
   let category: Category;
 
   setup(async () => {
-    // 1. Alles leeren
     await db.localspotStore.deleteAllLocalSpots();
     await db.categoryStore.deleteAll();
     await db.userStore.deleteAll();
     
-    // 2. Basis-Daten erstellen (User UND Category)
+   
     user = await db.userStore.addUser(maggie);
-    category = await db.categoryStore.addCategory(testCategory); // Echte Kategorie in DB anlegen
+    category = await db.categoryStore.addCategory(testCategory); 
     
-    // 3. IDs in Test-Daten injecten
     harbourCafe.userid = user._id;
-    harbourCafe.category = category._id; // WICHTIG für populate Tests
+    harbourCafe.category = category._id; 
 
     for (let i = 0; i < testLocalSpots.length; i += 1) {
       testLocalSpots[i].userid = user._id;
@@ -65,11 +63,9 @@ test("get a localspot - success", async () => {
     await db.localspotStore.deleteLocalSpotById("bad-id");
   });
 
-  // Der Test, der vorher fehlgeschlagen ist
+  
   test("get localspot with populated category", async () => {
     const spot = await db.localspotStore.addLocalSpot(harbourCafe);
-    // Hier musst du sicherstellen, dass deine Methode im Store auch populated!
-    // Falls du keine separate Methode hast, nutze getLocalSpotById und prüfe, ob dein Store populated
     const retrieved = await db.localspotStore.getLocalSpotById(spot._id);
     
     assert.isNotNull(retrieved.category, "Category should be populated or at least present");

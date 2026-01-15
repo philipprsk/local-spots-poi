@@ -48,30 +48,27 @@ export const userApi: { [key: string]: RouteOptions } = {
         return Boom.unauthorized("Authentication failed: " + request.auth.error.message);
       }
 
-      // Type-Cast zu 'any', um den 'unknown' Fehler zu beheben
+      
       const credentials = request.auth.credentials as any;
       const profile = credentials.profile;
 
-      // GitHub User haben manchmal keine öffentliche E-Mail
+     
       const email = profile.email || `${profile.username}@github.com`;
 
       try {
-        // 1. User suchen oder neu anlegen
         let user = await db.userStore.getUserByEmail(email);
         if (!user) {
           user = await db.userStore.addUser({
             firstName: profile.displayName || profile.username || "GitHub",
             lastName: "User",
             email: email,
-            password: "", // Leeres Passwort für OAuth
+            password: "", 
           });
         }
 
-        // 2. JWT Token für deine App generieren
+       
         const token = createToken(user);
 
-        // 3. Weiterleitung ans Frontend
-        // Der Token wird als Query-Parameter angehängt
         return h.redirect(`https://local-spot-poi.netlify.app/dashboard?token=${token}`);
       } catch (err) {
         console.error("GitHub OAuth Error:", err);
@@ -93,24 +90,23 @@ export const userApi: { [key: string]: RouteOptions } = {
     const credentials = request.auth.credentials as any;
     const profile = credentials.profile;
     
-    // Google liefert die E-Mail zuverlässiger als GitHub
     const email = profile.email;
 
     try {
       let user = await db.userStore.getUserByEmail(email);
       
       if (!user) {
-        // Google Profile nutzt oft displayName oder splitte den Namen
+        
         user = await db.userStore.addUser({
           firstName: profile.name?.first || profile.displayName?.split(" ")[0] || "Google",
           lastName: profile.name?.last || profile.displayName?.split(" ")[1] || "User",
           email: email,
-          password: "", // Wichtig: User-Model muss password optional haben!
+          password: "", 
         });
       }
 
       const token = createToken(user);
-      // Zurück zum Frontend
+     
       return h.redirect(`https://local-spot-poi.netlify.app/dashboard?token=${token}`);
     } catch (err) {
       console.error(err);
@@ -164,7 +160,7 @@ export const userApi: { [key: string]: RouteOptions } = {
   },
 
   create: {
-    auth: false, // WICHTIG: Kein extra "options" Objekt hier drin!
+    auth: false,
     handler: async (request: Request, h: ResponseToolkit) => {
       console.log(`--- API CALL: Create User for ${(request.payload as any).email} ---`);
       try {

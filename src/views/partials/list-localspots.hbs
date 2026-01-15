@@ -2,7 +2,7 @@
   <div class="box">
     <div class="columns is-vcentered is-mobile">
       
-      <!-- Links: Text -->
+     
       <div class="column is-4">
         <p class="title is-5 mb-2">{{title}}</p>
         {{#if category}}
@@ -11,7 +11,6 @@
         <p class="has-text-grey is-size-7">{{description}}</p>
       </div>
       
-      <!-- Mitte: Bild -->
       <div class="column is-4 has-text-centered">
         {{#if img}}
         <figure class="image is-128x128 is-inline-block">
@@ -24,12 +23,8 @@
         {{/if}}
       </div>
       
-      <!-- Rechts: Actions -->
       <div class="column is-4 has-text-right">
         <div class="buttons are-small is-right">
-          <a class="button is-light" title="Coming Soon">
-            <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
-          </a>
           {{#if img}}
           <form action="/localspot/{{_id}}/deleteimage" method="POST" style="display: inline;">
             <button class="button is-small is-danger is-light" type="submit">

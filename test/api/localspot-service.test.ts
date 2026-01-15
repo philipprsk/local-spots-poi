@@ -28,7 +28,6 @@ export const localspotService = {
     axios.defaults.headers.common.Authorization = "";
   },
 
-  // ... restliche Methoden bleiben gleich ...
   async createUser(user: User) {
     const res = await axios.post(`${this.localspotURL}/api/users`, user);
     return res.data;
@@ -82,14 +81,14 @@ export const localspotService = {
       slug: category.slug,
       icon: category.icon,
       color: category.color,
-      // Hast du vielleicht 'isActive' im Schema, aber hier vergessen?
+    
     };
     
     try {
       const res = await axios.post(`${this.localspotURL}/api/categories`, payload);
       return res.data;
     } catch (e: any) {
-      // DIESER LOG RETTET UNS:
+     
       console.log("CATEGORY ERROR DETAILS:", e.response?.data); 
       throw e;
     }

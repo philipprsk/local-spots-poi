@@ -5,7 +5,7 @@ import { User } from "../../src/types/localspot-types.js";
 import { suite, test, setup, teardown } from "mocha";
 
 suite("Admin API tests", () => {
-  // Diese Variablen halten die Daten (Email/Passwort) für den Login
+  // These will hold user credentials
   let adminCredentials: any;
   let regularCredentials: any;
   let createdAdmin: any;
@@ -13,15 +13,15 @@ suite("Admin API tests", () => {
   setup(async () => {
     await cleanDatabase();
 
-    // 1. Admin erstellen & Daten speichern
+    // 1. Create admin user & save credentials
     adminCredentials = getRandomUser(true); 
     createdAdmin = await localspotService.createUser(adminCredentials);
     
-    // 2. Normalen User erstellen & Daten speichern
+    // 2. Create regular user & save credentials
     regularCredentials = getRandomUser(false);
     await localspotService.createUser(regularCredentials);
 
-    // Standardmäßig als Admin einloggen
+    // Default to logging in as admin
     await localspotService.authenticate(adminCredentials);
   });
 
@@ -30,7 +30,7 @@ suite("Admin API tests", () => {
   });
 
   test("non-admin cannot list users", async () => {
-    // Wechsel zum normalen User
+    // Switch to regular user
     await localspotService.authenticate(regularCredentials);
     try {
       await localspotService.getAllUsers();
@@ -42,14 +42,14 @@ suite("Admin API tests", () => {
   });
 
   test("non-admin cannot delete user", async () => {
-    // 1. Als Admin einloggen, um User-Liste zu sehen
+    // 1. Log in as admin to see user list
     await localspotService.authenticate(adminCredentials);
     const users = await localspotService.getAllUsers();
     
-    // Finde jemanden zum Löschen (der nicht der Admin selbst ist)
+    // Find someone to delete (not the admin themselves)
     const victim = users.find((u: User) => u.email === regularCredentials.email);
 
-    // 2. Zurück zum normalen User wechseln
+    // 2. Switch back to regular user
     await localspotService.authenticate(regularCredentials);
     try {
       if (victim) {

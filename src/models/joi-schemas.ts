@@ -25,25 +25,22 @@ export const UserSpecPlus = UserSpec.keys({
 
 export const UserArray = Joi.array().items(UserSpecPlus).label("UserArray");
 
-/**
- * LocalSpot Schemas
- */
 
-// Das hier wird für den PAYLOAD (POST/PUT) genutzt
+
 export const LocalSpotSpec = Joi.object()
   .keys({
     title: Joi.string().example("Harbour Cafe").required(),
     description: Joi.string().example("A cozy cafe by the docks").required().allow("").optional(),
     latitude: Joi.number().example(52.1234).required(),
     longitude: Joi.number().example(13.5678).required(),
-    userid: IdSpec.optional(),    // Erlaubt userid, falls der Test sie mitschickt
-    category: IdSpec.optional(), // Vorbereitung für Level 2
+    userid: IdSpec.optional(),    
+    category: IdSpec.optional(), 
   })
-  .unknown(true) // DAS HIER fixiert den "_id is not allowed" Fehler im Payload
+  .unknown(true)
   .label("LocalSpot");
   
 
-// Das hier wird für die RESPONSE (Antwort vom Server) genutzt
+
 export const LocalSpotSpecPlus = LocalSpotSpec.keys({
   _id: IdSpec,
   __v: Joi.any().optional(),

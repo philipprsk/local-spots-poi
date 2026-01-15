@@ -106,9 +106,7 @@ export const testLocalSpots: LocalSpot[] = [
   },
 ];
 
-// test/fixtures.test.ts
 
-// ... bestehende Exporte (maggie, adminUser, etc.)
 
 export const testCategory = {
   name: "Restaurant",
@@ -118,7 +116,6 @@ export const testCategory = {
   description: "Places to eat",
 };
 
-// Falls du auch ein Array für multiple Kategorien brauchst:
 export const testCategories = [
   { name: "Cafe", slug: "cafe", icon: "☕", color: "#6F4E37", description: "Coffee and tea" },
   { name: "Park", slug: "park", icon: "🌳", color: "#228B22", description: "Green spaces" },

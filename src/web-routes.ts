@@ -5,7 +5,7 @@ import { localspotController } from "./controllers/localspot-controller.js";
 import { adminController } from "./controllers/admin-controller.js";
 import { ServerRoute } from "@hapi/hapi";
 
-// Optional: Interface importieren, falls verwendet
+// Optional: Imoprt Interface for WebRoute
 // import { WebRoute } from "./types/web-route";
 
 export const webRoutes: ServerRoute[] = [

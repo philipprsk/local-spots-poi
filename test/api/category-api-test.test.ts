@@ -19,11 +19,11 @@ suite("Category API tests", () => {
     testCounter += 1;
     await cleanDatabase();
     
-    // 1. Admin erstellen (nutze getRandomUser!)
+    // 1. Generating An Admin User (use getRandomUser!)
     adminData = getRandomUser(true);
     await localspotService.createUser(adminData);
     
-    // 2. Einloggen
+    // 2. Logging in
     await localspotService.authenticate(adminData);
   });
 
@@ -32,7 +32,7 @@ suite("Category API tests", () => {
   });
 
   test("create a category", async () => {
-    // Slug einzigartig machen
+    // Make slug unique
     const uniqueCategory = { ...testCategory, slug: `restaurant-${Date.now()}` };
     const newCategory = await localspotService.createCategory(uniqueCategory);
     
@@ -86,7 +86,7 @@ suite("Category API tests", () => {
       await localspotService.createCategory(uniqueCategory);
       assert.fail("Should fail on duplicate slug");
     } catch (err: any) {
-      // 409 Conflict ist korrekt, 400 oder 500 manchmal auch je nach Server-Logik
+      // 409 Conflict is correct, 400 or 500 sometimes also depending on server logic
       assert.include([400, 409, 500], err.response?.status);
     }
   });

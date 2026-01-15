@@ -18,7 +18,6 @@ suite("Localspot API tests", () => {
     userCredentials = getRandomUser();
     user = await localspotService.createUser(userCredentials);
     await localspotService.authenticate(userCredentials);
-    // Dem Test-Objekt die User-ID zuweisen, damit die Validierung im Backend passt
     harbourCafe.userid = user._id;
   });
 
@@ -54,7 +53,6 @@ suite("Localspot API tests", () => {
       await localspotService.getLocalSpot(spot._id);
       assert.fail("Should have thrown 404 error");
     } catch (err: any) {
-      // Bei API Tests erwarten wir einen 404 Fehler von Axios, wenn das Objekt weg ist
       assert.equal(err.response.status, 404);
     }
   });
@@ -73,14 +71,14 @@ suite("Localspot API tests", () => {
       await localspotService.deleteLocalSpot("bad-id");
       assert.fail("Should have thrown error");
     } catch (err: any) {
-      // Da deine Joi-Validierung vermutlich eine gültige Mongo-ID erwartet, 
-      // wird hier wahrscheinlich ein 400 (Bad Request) oder 404 kommen.
+      // Since your Joi validation likely expects a valid Mongo ID,
+      // you will probably get a 400 (Bad Request) or 404 here.
       assert.include([400, 404], err.response.status);
     }
   });
 
   test("get localspot with populated category", async () => {
-    // Falls deine fixtures eine categoryId enthalten:
+    // If your fixtures contain a categoryId:
     const spot = await localspotService.createLocalSpot(harbourCafe);
     const retrieved = await localspotService.getLocalSpot(spot._id);
     

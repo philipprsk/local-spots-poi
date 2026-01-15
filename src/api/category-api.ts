@@ -24,8 +24,6 @@ export const categoryApi = {
     tags: ["api"],
     description: "Get all categories",
     notes: "Returns all categories",
-    // WICHTIG: Response Validierung auskommentiert, um 500 Fehler zu vermeiden
-    // response: { schema: CategoryArray, failAction: validationError },
   },
 
   findOne: {
@@ -44,11 +42,9 @@ export const categoryApi = {
     tags: ["api"],
     description: "Get a category",
     notes: "Returns category details",
-    // response: { schema: CategorySpecPlus, failAction: validationError },
   },
 
   create: {
-    // Erstellen darf meist nur der Admin oder eingeloggte User (hier JWT oder Session)
     auth: { strategy: "jwt" }, 
     handler: async (request: Request, h: ResponseToolkit) => {
       try {
@@ -100,7 +96,7 @@ export const categoryApi = {
     handler: async (request: Request, h: ResponseToolkit) => {
       try {
         requireAdmin(request);
-        await db.categoryStore.deleteAllCategories(); // Name evtl. anpassen, wenn er im Store anders heißt
+        await db.categoryStore.deleteAllCategories();
         return h.response().code(204);
       } catch (err) {
         return Boom.serverUnavailable("Database Error");

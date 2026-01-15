@@ -9,19 +9,19 @@ suite("Authentication API tests", () => {
 
   setup(async () => {
     await cleanDatabase();
-    // 1. Frischen User generieren
+    // 1. Generate a random user
     userInfo = getRandomUser();
-    // 2. User in DB anlegen (damit Login klappen kann)
+    // 2. Create user in DB (so login will work)
     await localspotService.createUser(userInfo);
   });
 
   teardown(async () => {
-    // Auth Header nach jedem Test löschen
+    // Clear Auth Header after each test
     await localspotService.clearAuth();
   });
 
   test("authenticate", async () => {
-    // Login mit dem generierten User
+    // Login with the generated user
     const response = await localspotService.authenticate(userInfo);
     assert.isTrue(response.success);
     assert.isDefined(response.token);
@@ -29,22 +29,22 @@ suite("Authentication API tests", () => {
 
   test("verify Token", async () => {
     const response = await localspotService.authenticate(userInfo);
-    // Token dekodieren und prüfen, ob die Email stimmt
-    // 'as any' verhindert den TypeScript Fehler beim Zugriff auf .email
+    // Decode token and check if the email matches
+    // 'as any' prevents TypeScript error when accessing .email
     const decoded = decodeToken(response.token) as any;
     assert.equal(decoded.email, userInfo.email);
-    assert.equal(decoded.userId, response.userId); // Falls deine API userId zurückgibt
+    assert.equal(decoded.userId, response.userId); // If your API returns userId
   });
 
   test("check Unauthorized", async () => {
-    // Sicherstellen, dass wir ausgeloggt sind
+    // Ensure we are logged out
     await localspotService.clearAuth();
     try {
-      // Versuch, eine geschützte Route aufzurufen (z.B. deleteAllUsers)
+      // Attempt to access a protected route (e.g., deleteAllUsers)
       await localspotService.deleteAllUsers();
       assert.fail("Route not protected");
     } catch (error: any) {
-      // Wir erwarten 401 Unauthorized
+      // We expect 401 Unauthorized
       assert.equal(error.response.status, 401);
     }
   });

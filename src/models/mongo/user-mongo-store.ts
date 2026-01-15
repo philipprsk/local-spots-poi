@@ -15,7 +15,7 @@ export const userMongoStore = {
     return null;
   },
 
-  async addUser(userData: Partial<UserType>): Promise<UserType> {
+  async addUser(userData: Partial<UserType>): Promise<UserType | null> {
     try {
     // Check if user with this email already exists
     if (userData.email) {

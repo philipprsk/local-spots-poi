@@ -17,19 +17,19 @@ if (!process.env.COOKIE_PASSWORD) {
 // 3. Now TS treats this as 'string', not 'string | undefined'
 const JWT_SECRET: string = process.env.COOKIE_PASSWORD;
 
-// ... rest of your code
+
 
 export function createToken(user: User): string {
   const payload = {
-    id: user._id, // oder user.id, je nach DB Typ
+    id: user._id, 
     email: user.email,
     isAdmin: user.isAdmin,
-    scope: user.isAdmin ? ["admin"] : [] // Optional: Scopes für Hapi Rechte nutzen
+    scope: user.isAdmin ? ["admin"] : [] 
   };
   
   const options: jwt.SignOptions = {
     algorithm: "HS256",
-    expiresIn: "24h", // Token ist 24 Stunden gültig
+    expiresIn: "24h", 
   };
   
   return jwt.sign(payload, JWT_SECRET, options);
@@ -53,7 +53,7 @@ export async function validate(decoded: JwtPayload, request: Request, h: any) {
   console.log("--- JWT Validation Start ---");
   console.log("1. Decoded Token ID:", decoded.id);
 
-  // Debug: Check if the ID format is correct for your DB
+
   const user = await db.userStore.getUserById(decoded.id); 
   
   if (!user) {
@@ -67,15 +67,14 @@ export async function validate(decoded: JwtPayload, request: Request, h: any) {
   return { isValid: true, credentials: user };
 }
 
-// Diese Funktion brauchst du eigentlich selten, da Hapi das decoden für dich übernimmt,
-// wenn du auth: 'jwt' nutzt. Aber falls du sie brauchst, hier die korrigierte Version:
+
 export function getUserIdFromRequest(request: Request): string | null {
   let userId = null;
   try {
     const { authorization } = request.headers;
     if (authorization) {
         const token = authorization.split(" ")[1];
-        // Hier fehlte das korrekte Secret!
+       
         const decodedToken = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
         userId = decodedToken.id;
     }

@@ -8,10 +8,9 @@ import { db } from "../../src/models/db.js";
 suite("User Model tests", () => {
   let users: User[] = [];
 
-  // CHANGED: beforeEach -> setup
+
   setup(async () => {
-    // Ensure DB is connected before wiping
-    // If you have a separate DB helper for models, call it here
+  
     await db.userStore.deleteAll();
     users = [];
     for (let i = 0; i < testUsers.length; i += 1) {

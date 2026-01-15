@@ -14,8 +14,7 @@ export const localspotApi = {
         // 1. Get the logged-in user from the JWT
         const user = request.auth.credentials as User;
         
-        // 2. Use the private method you mentioned earlier
-        // Make sure your db.localspotStore has this method exported
+      
         const localspots = await db.localspotStore.getUserLocalSpots(user._id);
         
         return localspots;
@@ -64,7 +63,7 @@ export const localspotApi = {
         // FIX: Safely convert ObjectId to string, or fallback to empty string
         const userId = user._id ? user._id.toString() : "";
         
-        // Debug Log: Check if we actually have an ID now
+       
         console.log("Creating LocalSpot for User ID:", userId);
 
         const localspotPayload = { 
@@ -78,8 +77,8 @@ export const localspotApi = {
           return h.response(localspot).code(201);
         }
         return Boom.badImplementation("error creating localspot");
-      } catch (err: any) { // Type as 'any' to access .message
-        // IMPORTANT: Log the real error to see why the DB failed
+      } catch (err: any) { 
+        
         console.error("❌ LocalSpot Create Error:", err.message); 
         return Boom.badImplementation("Database error: " + err.message);
       }
@@ -172,12 +171,12 @@ export const localspotApi = {
       const localspot = await db.localspotStore.getLocalSpot(id);
       if (!localspot) return Boom.notFound("No LocalSpot with this id");
 
-      // Lösche Cloudinary Bild
+    
       if (localspot.imgPublicId) {
         await imageStore.deleteImage(localspot.imgPublicId);
       }
 
-      // FIX: Sicherstellen, dass wir einen String haben
+
       const localspotId = localspot._id ? localspot._id.toString() : "";
 
       const updated = await db.localspotStore.updateLocalSpot(localspotId, {

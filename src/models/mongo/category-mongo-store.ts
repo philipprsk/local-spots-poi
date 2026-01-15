@@ -20,7 +20,7 @@ async getCategoryBySlug(slug: string): Promise<CategoryType | null> {
   return doc ? { ...doc, _id: doc._id.toString() } : null;
 },
 
-async addCategory(category: Partial<CategoryType>): Promise<CategoryType> {
+async addCategory(category: Partial<CategoryType>): Promise<CategoryType | null> {
   const newCategory = new Category(category);
   const savedCategory = await newCategory.save();
   const obj = savedCategory.toObject ? savedCategory.toObject() : savedCategory;

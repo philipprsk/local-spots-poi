@@ -9,13 +9,13 @@ suite("User API tests", () => {
   setup(async () => {
     await cleanDatabase();
     
-    // 1. Admin-Daten generieren (MIT Klartext-Passwort)
+    // 1. Generate An Admin User
     adminData = getRandomUser(true); 
     
-    // 2. Admin anlegen
+    // 2. Create Admin
     await localspotService.createUser(adminData);
     
-    // 3. Einloggen mit den Original-Daten (nicht dem Rückgabewert von createUser!)
+    // 3. Authenticate with the original data (not the return value from createUser!)
     await localspotService.authenticate(adminData);
   });
 
@@ -31,12 +31,12 @@ suite("User API tests", () => {
   });
 
   test("get a user - success", async () => {
-    // Einen User anlegen, den wir abrufen wollen
+    //create a user
     const userParams = getRandomUser();
     const setupUser = await localspotService.createUser(userParams);
     const userId = setupUser._id ?? setupUser.id;
     
-    // Als Admin (siehe Setup) den User abrufen
+
     const returnedUser = await localspotService.getUser(userId);
     
     assert.equal((returnedUser._id ?? returnedUser.id).toString(), userId.toString());
@@ -81,21 +81,20 @@ suite("User API tests", () => {
   });
 
   test("delete all users", async () => {
-    // Wir sind als Admin eingeloggt (siehe Setup)
-    // Zwei weitere User anlegen
+  
     await localspotService.createUser(getRandomUser());
     await localspotService.createUser(getRandomUser());
     
     await localspotService.deleteAllUsers();
     
-    // Nach delete all ist auch der Admin weg -> Neuer Admin nötig für Check
+    
     await localspotService.clearAuth();
     const newAdmin = getRandomUser(true);
     await localspotService.createUser(newAdmin);
     await localspotService.authenticate(newAdmin);
     
     const users = await localspotService.getAllUsers();
-    // Nur der neue Admin sollte da sein
+    
     assert.equal(users.length, 1); 
   });
 });
