@@ -51,8 +51,6 @@ export const userApi: { [key: string]: RouteOptions } = {
       
       const credentials = request.auth.credentials as any;
       const profile = credentials.profile;
-
-     
       const email = profile.email || `${profile.username}@github.com`;
 
       try {
@@ -69,7 +67,7 @@ export const userApi: { [key: string]: RouteOptions } = {
        
         const token = createToken(user);
 
-        return h.redirect(`https://local-spot-poi.netlify.app/dashboard?token=${token}`);
+        return h.redirect(`https://local-spot-poi.netlify.app/login?token=${token}`);
       } catch (err) {
         console.error("GitHub OAuth Error:", err);
         return Boom.serverUnavailable("Database Error during GitHub Login");
@@ -89,7 +87,6 @@ export const userApi: { [key: string]: RouteOptions } = {
 
     const credentials = request.auth.credentials as any;
     const profile = credentials.profile;
-    
     const email = profile.email;
 
     try {
@@ -107,7 +104,7 @@ export const userApi: { [key: string]: RouteOptions } = {
 
       const token = createToken(user);
      
-      return h.redirect(`https://local-spot-poi.netlify.app/dashboard?token=${token}`);
+      return h.redirect(`https://local-spot-poi.netlify.app/login?token=${token}`);
     } catch (err) {
       console.error(err);
       return Boom.serverUnavailable("Database error during Google login");
