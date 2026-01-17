@@ -124,13 +124,6 @@ server.auth.strategy("google-oauth", "bell", {
     options: { auth: false }
   });
 
-  server.route({
-    method: "GET",
-    path: "/public/{param*}",
-    handler: { directory: { path: path.join(__dirname, "../public"), redirectToSlash: true, index: true } },
-    options: { auth: false }
-  });
-
   server.route(webRoutes);
   server.route(apiRoutes);
 
