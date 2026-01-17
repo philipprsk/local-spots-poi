@@ -100,7 +100,7 @@ async function init() {
   password: process.env.COOKIE_PASSWORD, // Verschlüsselung für das OAuth-Cookie
   clientId: process.env.GITHUB_CLIENT_ID,
   clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  isSecure: process.env.NODE_ENV === "production", // Nur in Produktion auf true setzen
+  isSecure: process.env.NODE_ENV === "production", 
   location: process.env.URL || `http://localhost:${process.env.PORT || 3000}`
 });
 

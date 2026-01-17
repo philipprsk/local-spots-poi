@@ -5,16 +5,15 @@ import { db } from "../models/db.js";
 import { User } from "../types/localspot-types.js";
 ;
 
-// 1. Load env vars immediately
+
 dotenv.config();
 
-// 2. CHECK if the secret exists. If not, stop the app.
-// This fixes the TypeScript error because TS now knows it CANNOT be undefined below.
+
 if (!process.env.COOKIE_PASSWORD) {
   throw new Error("FATAL ERROR: COOKIE_PASSWORD is not defined. Check your .env file!");
 }
 
-// 3. Now TS treats this as 'string', not 'string | undefined'
+
 const JWT_SECRET: string = process.env.COOKIE_PASSWORD;
 
 

@@ -7,6 +7,7 @@ import { imageStore } from "../models/image-store.js";
 import { User, LocalSpot } from "../types/localspot-types.js";
 import { Readable } from "stream";
 import { time } from "console";
+import Joi from "joi";
 
 export const localspotApi = {
   find: {
@@ -174,19 +175,19 @@ export const localspotApi = {
                 let bufferData: Buffer;
 
                 if (Buffer.isBuffer(fileItem)) {
-                    // Fall A: Es ist direkt ein Buffer
+                 
                     bufferData = fileItem;
                 } else if (fileItem._data && Buffer.isBuffer(fileItem._data)) {
-                    // Fall B: Hapi Wrapper Objekt (Standard bei Multipart)
+                   
                     bufferData = fileItem._data;
                 } else {
-                    // Fall C: Irgendwas anderes -> Versuch Konvertierung
+                
                     bufferData = Buffer.from(fileItem);
                 }
 
                 console.log(`☁️ Upload zu Cloudinary (${bufferData.length} bytes)...`);
 
-                // 4. Upload (Genau wie in deinem Test!)
+                // 4. Upload 
                 const uploaded = await imageStore.uploadImage(bufferData);
                 
                 // 5. DB Update
@@ -212,21 +213,23 @@ export const localspotApi = {
   deleteImage: {
     auth: { strategy: "jwt" },
     tags: ["api"],
-    description: "Delete a specific image from localspot",
-    notes: "Deletes from Cloudinary and removes from DB array",
+    description: "Delete image",
+    
+    
+    validate: { params: { id: IdSpec, imageId: Joi.string() } },
+
     handler: async (request: Request, h: ResponseToolkit) => {
-      const { id, imageId } = request.params; // imageId = publicId
-      const localspot = await db.localspotStore.getLocalSpot(id);
+      // HIER IST DER FIX: Wir lesen aus request.params, NICHT query
+      const { id, imageId } = request.params; 
       
+      console.log(`API: Deleting Image ${imageId} from Spot ${id}`);
+
+      const localspot = await db.localspotStore.getLocalSpot(id);
       if (!localspot) return Boom.notFound("No LocalSpot with this id");
 
       try {
-          // 1. Cloudinary Delete
           await imageStore.deleteImage(imageId);
-          
-          // 2. DB Array Update
           await db.localspotStore.removeImageFromSpot(id, imageId);
-          
           return h.response({ success: true }).code(200);
       } catch (err) {
           console.error("Delete Image Error", err);
