@@ -127,7 +127,7 @@ export const localspotService = {
           ...formData.getHeaders(),
         },
       }
-    );
+    ); 
     return res.data;
   },
 

@@ -25,7 +25,10 @@ export type LocalSpot = {
   latitude: number;
   longitude: number;
   userid?: string;
-  category?: string | Category;
+  category?: Category | string;
+
+  images?: { url: string; publicId: string }[];
+
   img?: string;
   imgPublicId?: string;
 };

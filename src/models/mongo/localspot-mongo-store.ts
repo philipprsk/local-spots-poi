@@ -22,11 +22,11 @@ export const localspotMongoStore = {
     if (!id || !Mongoose.isValidObjectId(id)) return null;
     return Localspot.findById(id).populate("category").lean();
   },
+  
   async getLocalSpotsByUserId(id: string): Promise<LocalSpotType[]> {
-  if (!id) return [];
-  // Findet alle Spots, die diesem User gehören
-  return Localspot.find({ userid: id }).populate("category").lean();
-},
+    if (!id) return [];
+    return Localspot.find({ userid: id }).populate("category").lean();
+  },
 
   async getUserLocalSpots(id: string): Promise<LocalSpotType[]> {
     return Localspot.find({ userid: id }).populate("category").lean();
@@ -48,4 +48,28 @@ export const localspotMongoStore = {
   async deleteAllLocalSpots(): Promise<void> {
     await Localspot.deleteMany({});
   },
+
+  // MULTI-IMAGE HELPER
+
+  
+  async addImageToSpot(id: string, imageData: { url: string; publicId: string }): Promise<void> {
+    if (!id || !Mongoose.isValidObjectId(id)) return;
+    await Localspot.findByIdAndUpdate(
+      id,
+      { 
+        $push: { images: imageData }, // Array Push
+        
+        $set: { img: imageData.url, imgPublicId: imageData.publicId } 
+      }
+    );
+  },
+
+
+  async removeImageFromSpot(id: string, publicId: string): Promise<void> {
+    if (!id || !Mongoose.isValidObjectId(id)) return;
+    await Localspot.findByIdAndUpdate(
+      id,
+      { $pull: { images: { publicId: publicId } } } // Array Pull via publicId
+    );
+  }
 };
