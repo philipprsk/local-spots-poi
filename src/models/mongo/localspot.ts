@@ -2,8 +2,6 @@ import Mongoose from "mongoose";
 import { LocalSpot as LocalSpotType } from "../../types/localspot-types.js";
 const { Schema } = Mongoose;
 
-
-
 const localspotSchema = new Schema<LocalSpotType>({
   title: String,
   description: String, 
@@ -17,7 +15,15 @@ const localspotSchema = new Schema<LocalSpotType>({
     type: Schema.Types.ObjectId,
     ref: "Category",
   },
-  img: String,
+  
+  
+  images: [{
+    url: String,
+    publicId: String
+  }],
+  
+  
+  img: String, 
   imgPublicId: String,
 });
 

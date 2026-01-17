@@ -4,6 +4,7 @@ import { categoryApi } from "./api/category-api.js";
 import { ServerRoute } from "@hapi/hapi";
 
 export const apiRoutes: ServerRoute[] = [
+  
   // --- USERS ---
   { method: "post", path: "/api/users", options: userApi.create },
   { method: "post", path: "/api/users/authenticate", options: userApi.authenticate },
@@ -14,6 +15,7 @@ export const apiRoutes: ServerRoute[] = [
   { method: ["get", "post"], path: "/auth/github", options: userApi.githubLogin },
   { method: ["get", "post"], path: "/auth/google", options: userApi.googleLogin },
 
+
   // --- LOCALSPOTS ---
   { method: "post", path: "/api/localspots", options: localspotApi.create }, 
   { method: "get", path: "/api/localspots", options: localspotApi.find },
@@ -21,6 +23,8 @@ export const apiRoutes: ServerRoute[] = [
   { method: "delete", path: "/api/localspots/{id}", options: localspotApi.deleteOne },
   { method: "delete", path: "/api/localspots", options: localspotApi.deleteAll },
   { method: "post", path: "/api/localspots/{id}/image", options: localspotApi.uploadImage },
+  { method: "delete", path: "/api/localspots/{id}/images/{imageId}", options: localspotApi.deleteImage },
+
 
   // --- CATEGORIES ---
   { method: "get", path: "/api/categories", options: categoryApi.find },

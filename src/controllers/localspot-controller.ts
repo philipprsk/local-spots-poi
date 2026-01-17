@@ -65,40 +65,63 @@ export const localspotController = {
     },
   },
 
-  uploadImage: {
+ uploadImage: {
     payload: {
-      maxBytes: 10 * 1024 * 1024,
+      maxBytes: 20 * 1024 * 1024, 
       output: "data",
       parse: true,
       allow: "multipart/form-data",
+      multipart: true 
     },
     handler: async (request: Request, h: ResponseToolkit) => {
-  try {
-    const spot = await db.localspotStore.getLocalSpotById(request.params.id);
-    if (!spot) return h.redirect("/dashboard/localspots");
-    const { imagefile } = request.payload as { imagefile?: Buffer };
-    if (!imagefile) return h.redirect("/dashboard/localspots");
-    const result = await imageStore.uploadImage(imagefile);
-    await db.localspotStore.updateLocalSpot(spot._id, {
-      img: result.url,
-      imgPublicId: result.public_id,
-    });
-    return h.redirect("/dashboard/localspots");
-  } catch (error: any) {
-    console.error("Upload error:", error.message);
-    return h.redirect("/dashboard/localspots");
-  }
-},
+      try {
+        const spot = await db.localspotStore.getLocalSpotById(request.params.id);
+        if (!spot) return h.redirect("/dashboard/localspots");
+        
+        const payload = request.payload as any;
+        let imageFiles = payload.images; 
+
+        // Hapi Normalisierung: Wenn nur 1 Bild, ist es kein Array -> Array draus machen
+        if (!Array.isArray(imageFiles)) {
+            imageFiles = imageFiles ? [imageFiles] : [];
+        }
+
+        if (imageFiles.length === 0) return h.redirect("/dashboard/localspots");
+
+        // Loop durch alle Dateien
+        for (const file of imageFiles) {
+            const result = await imageStore.uploadImage(file);
+            
+             await db.localspotStore.addImageToSpot(spot._id, {
+                url: result.url,
+                publicId: result.public_id
+            });
+        }
+        
+        return h.redirect("/dashboard/localspots");
+      } catch (error: any) {
+        console.error("Upload error:", error.message);
+        return h.redirect("/dashboard/localspots");
+      }
+    },
   },
 
+  // Löschen eines spezifischen Bildes
   deleteImage: {
     handler: async (request: Request, h: ResponseToolkit) => {
-      const spot = await db.localspotStore.getLocalSpotById(request.params.id);
+      
+      const spotId = request.params.id;
+      const imageId = request.params.imageId; 
+
+      const spot = await db.localspotStore.getLocalSpotById(spotId);
       if (!spot) return h.redirect("/dashboard/localspots");
-      if (spot.imgPublicId) {
-        await imageStore.deleteImage(spot.imgPublicId);
-      }
-      await db.localspotStore.updateLocalSpot(spot._id, { img: null, imgPublicId: null });
+
+      // 1. Aus Cloudinary löschen
+      await imageStore.deleteImage(imageId);
+
+      // 2. Aus der Datenbank entfernen (Pull from Array)
+      await db.localspotStore.removeImageFromSpot(spotId, imageId);
+
       return h.redirect("/dashboard/localspots");
     },
   },

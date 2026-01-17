@@ -40,7 +40,6 @@ export const server = Hapi.server({
   port: process.env.port || 3000,
   host: "0.0.0.0",
   routes: {
-    payload: { maxBytes: 10 * 1024 * 1024, multipart: true },
     timeout: { server: 60000, socket: 60000 },
     cors: {
       origin: ["http://localhost:5173"], 
@@ -117,6 +116,13 @@ server.auth.strategy("google-oauth", "bell", {
 
 
   server.auth.default({ strategies: ["session", "jwt"] });
+
+  server.route({
+    method: "GET",
+    path: "/public/{param*}",
+    handler: { directory: { path: path.join(__dirname, "../public"), redirectToSlash: true, index: true } },
+    options: { auth: false }
+  });
 
   server.route({
     method: "GET",
