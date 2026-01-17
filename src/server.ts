@@ -40,7 +40,7 @@ export const server = Hapi.server({
   port: process.env.port || 3000,
   host: "0.0.0.0",
   routes: {
-    timeout: { server: 60000, socket: 60000 },
+    timeout: { server: 180000, socket: 180000 },
     cors: {
       origin: ["http://localhost:5173"], 
       credentials: true,

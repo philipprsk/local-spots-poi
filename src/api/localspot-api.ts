@@ -125,21 +125,26 @@ export const localspotApi = {
 
 
   uploadImage: {
-    auth: { strategy: "jwt" }, 
+    auth: { strategy: "jwt" },
     tags: ["api"],
-    description: "Upload images",
+    description: "Upload images (Render Optimized)",
     
     payload: { 
         multipart: true,       
-        output: "data" as const, 
-        maxBytes: 104857600,     // 100 MB
+        output: "data" as const,
+        maxBytes: 20971520,     
         parse: true,
         allow: "multipart/form-data",
-        failAction: "ignore" as const 
+        failAction: "ignore" as const,
+        
+  
+        timeout: false as const 
     },
     
-    // KEIN validate Block für Payload!
-    validate: { params: { id: IdSpec } },
+    // Server-Socket Timeout deaktivieren
+    timeout: {
+        socket: false
+    },
 
     handler: async (request: Request, h: ResponseToolkit) => {
         const { id } = request.params;
@@ -148,62 +153,53 @@ export const localspotApi = {
 
         const payload = request.payload as any;
 
-        // 1. Check: Haben wir überhaupt Payload?
-        if (!payload) {
-             console.error("❌ API: Payload ist leer");
-             return Boom.badRequest("Payload empty");
+        if (!payload || (!payload.images && !payload.imagefile)) {
+             return Boom.badRequest("No images found");
         }
 
-        // 2. Daten finden (Frontend sendet 'images')
-        let files = payload.images;
-        
-        // Fallback falls Frontend 'imagefile' nutzt (je nach Version)
-        if (!files) files = payload.imagefile;
+        // Array Normalisierung
+        let files = payload.images || payload.imagefile;
+        if (!Array.isArray(files)) files = [files];
+        const validFiles = files.filter((f: any) => f);
 
-        if (!files) {
-             console.error("❌ API: Key 'images' fehlt im Payload. Keys:", Object.keys(payload));
-             return Boom.badRequest("No 'images' field in upload");
-        }
-
-        // 3. Normalisieren zu Array
-        const fileArray = Array.isArray(files) ? files : [files];
+        console.log(`🚀 Starte Upload für ${validFiles.length} Bilder (Sequenziell für Render Stabilität)...`);
 
         try {
-            for (const fileItem of fileArray) {
+      
             
-                
+            for (const fileItem of validFiles) {
+                // 1. Buffer extrahieren
                 let bufferData: Buffer;
-
                 if (Buffer.isBuffer(fileItem)) {
-                 
                     bufferData = fileItem;
                 } else if (fileItem._data && Buffer.isBuffer(fileItem._data)) {
-                   
                     bufferData = fileItem._data;
                 } else {
-                
                     bufferData = Buffer.from(fileItem);
                 }
 
-                console.log(`☁️ Upload zu Cloudinary (${bufferData.length} bytes)...`);
+                // RAM-Check Logging
+                console.log(`   -> Uploading File (${(bufferData.length / 1024 / 1024).toFixed(2)} MB)...`);
 
-                // 4. Upload 
+                // 2. Upload
                 const uploaded = await imageStore.uploadImage(bufferData);
                 
-                // 5. DB Update
+                // 3. Sofort Speichern
                 await db.localspotStore.addImageToSpot(
                     localspot._id.toString(), 
                     { url: uploaded.url, publicId: uploaded.public_id }
                 );
             }
+
+            console.log("✅ Alle Bilder erfolgreich.");
             
             // Updated Spot zurückgeben
             const updatedSpot = await db.localspotStore.getLocalSpot(id);
             return h.response(updatedSpot).code(200);
 
         } catch (err: any) {
-            console.error("🔥 API Upload Error:", err);
-            return Boom.badImplementation("Upload failed: " + err.message);
+            console.error("🔥 Upload Error:", err);
+            return Boom.badGateway("Upload failed: " + err.message);
         }
     },
   },
